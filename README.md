@@ -1,67 +1,129 @@
 # Gamified Federated Learning Thesis Starter
 
-This repository is a starter testbed for your thesis topic:
+This repository is a small thesis testbed for comparing a Flower/Python federated learning simulation with a Unity simulation.
 
-Simulating Participant Behavior in Gamified Federated Learning Systems
+The current workflow is:
 
-## What is included
+1. Generate a fresh random client roster in Python.
+2. Run 100 federated rounds in Python and export `flower_comparison_summary.json`.
+3. Copy the generated `initial_clients.json` into Unity and run the same scenario.
+4. Export `unity_comparison_summary.json` from Unity.
+5. Compare the two summaries with the reusable compare function or CLI script.
 
-- Flower-based federated learning simulation
-- Participant behavior model (battery, connectivity, engagement, churn)
-- Three scenarios:
-  - baseline: no incentive mechanism
-  - static: fixed incentive per participation
-  - gamified: dynamic incentive with levels and streaks
-- Unity-ready event stream output as JSONL (round metrics, leaderboard, client states)
+## Project Files
 
-## Project structure
+- `run.py`: runs the Flower/Python simulation and writes summary outputs.
+- `compare_summaries.py`: compares the Flower and Unity summaries and writes report files.
+- `src/fl_gamified/client.py`: client model and random client generation.
+- `src/fl_gamified/server.py`: federated round logic and Flower summary export.
+- `src/fl_gamified/system.py`: higher-level simulation orchestration.
+- `src/fl_gamified/reporting.py`: reusable summary comparison helper.
 
-- src/fl_gamified/config.py: experiment and scenario configuration
-- src/fl_gamified/data.py: heterogeneous client data partitioning
-- src/fl_gamified/model.py: sklearn model parameter utilities
-- src/fl_gamified/behavior.py: participant behavior model
-- src/fl_gamified/gamification.py: incentive and leaderboard engine
-- src/fl_gamified/client.py: Flower NumPy client implementation
-- src/fl_gamified/strategy.py: custom Flower strategy for behavior-aware client selection
-- src/fl_gamified/bridge.py: Unity event publishing to JSONL
-- src/fl_gamified/simulation.py: simulation runner
-- run.py: command-line entrypoint
+## Flower / Python Run
 
-## Setup
+### 1. Create the environment
 
-1) Create and activate a virtual environment
+Windows PowerShell:
 
-- Windows PowerShell:
-  - python -m venv .venv
-  - .\.venv\Scripts\Activate.ps1
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 
-2) Install dependencies
+### 2. Run the simulation
 
-- pip install -r requirements.txt
+```powershell
+python run.py
+```
 
-## Run examples
+What this produces:
 
-- Baseline
-  - python run.py --scenario baseline --rounds 10 --clients 20
+- `outputs/initial_clients.json`
+- `outputs/flower_comparison_summary.json`
+- `outputs/simulation_events.jsonl`
 
-- Static incentives
-  - python run.py --scenario static --rounds 10 --clients 20
+The initial client roster is randomized by default on every run. The current setup uses `build_random_clients(count=10)` without a fixed seed, so each run can produce a different client mix.
 
-- Gamified incentives
-  - python run.py --scenario gamified --rounds 10 --clients 20
+### 3. What the Flower summary contains
 
-## Unity integration path
+- `config`: the simulation configuration used for the run.
+- `rounds`: per-round selection, training, samples, and accuracy values.
+- `final_clients`: final client state snapshot.
+- `final_model_accuracy`: the final global accuracy.
 
-Simulation creates JSONL events at:
+## Unity Run
 
-- outputs/unity_events.jsonl
+### 1. Move the Python client roster into Unity
 
-Each line is a JSON event containing round stats, selected clients, incentive outcomes, and leaderboard snapshot.
-Unity can tail this file or consume it through a small bridge service in later steps.
+Take `outputs/initial_clients.json` from the Python run and place it where Unity can read it, then import it through the parser in the Unity project.
 
-## Next thesis-oriented extensions
+The current Unity import flow is implemented in `FLSimulationManager` and `FLParser`.
 
-- Add differential privacy accounting and noisy reward attribution
-- Add richer churn model with time-varying user routines
-- Replace digits dataset with MNIST/CIFAR-10 scenarios
-- Build socket bridge for real-time Unity ingestion
+### 2. Run the Unity simulation
+
+Use the Unity UI to start the simulation and export the report. The report button writes the summary to:
+
+- `Outputs/unity_comparison_summary.json`
+
+Unity is currently configured for 100 rounds, matching the Python run.
+
+### 3. What the Unity summary contains
+
+The Unity summary matches the same top-level structure as the Flower summary:
+
+- `config`
+- `rounds`
+- `final_clients`
+- `final_model_accuracy`
+
+## Compare Flower and Unity
+
+### CLI usage
+
+After both summaries exist, generate the comparison reports with:
+
+```powershell
+python compare_summaries.py --flower outputs/flower_comparison_summary.json --unity outputs/unity_comparison_summary.json
+```
+
+This writes:
+
+- `outputs/summary_comparison.md`
+- `outputs/summary_comparison.csv`
+
+### Reusable function
+
+If you want to use the comparison logic from another Python script, import:
+
+```python
+from src.fl_gamified.reporting import compare_comparison_summaries
+
+report = compare_comparison_summaries(
+    "outputs/flower_comparison_summary.json",
+    "outputs/unity_comparison_summary.json",
+    "outputs/summary_comparison.md",
+    "outputs/summary_comparison.csv",
+)
+```
+
+The function returns a dictionary with:
+
+- summary-level differences
+- round-level differences
+- client-level differences
+
+## Current Comparison Artifacts
+
+The latest generated comparison artifacts are:
+
+- `outputs/summary_comparison.md`
+- `outputs/summary_comparison.csv`
+
+Those files are meant to be regenerated every time you run a new Flower summary and a new Unity summary.
+
+## Notes
+
+- Unity export naming is standardized to `unity_comparison_summary.json`.
+- The comparison script assumes both summaries share the same schema.
+- If you change the number of clients or the selection logic, regenerate both summaries before comparing.

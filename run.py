@@ -1,8 +1,10 @@
-import random
+import json
+import os
 
-from src.fl_gamified.client import Client, build_demo_clients
+from src.fl_gamified.client import build_random_clients
 from src.fl_gamified.server import Server
 from src.fl_gamified.config import SimulationConfig
+from src.fl_gamified.logger import EventLogger
 
 
 def main() -> None:
@@ -11,68 +13,36 @@ def main() -> None:
     print("=" * 90)
     print()
 
+    os.makedirs("outputs", exist_ok=True)
+
     # Server'ı initialize et
-    config = SimulationConfig(seed=42, rounds=6)
-    server = Server(config=config)
+    config = SimulationConfig(seed=42, rounds=100)
+    logger = EventLogger(path="outputs/simulation_events.jsonl", mode="w")
+    server = Server(config=config, logger=logger)
     server.initialize_model(input_dim=config.input_dim, num_classes=config.num_classes)
     print()
 
-    # İlk 5 clienti register et
-    initial_clients = build_demo_clients()
+    # İlk 10 rastgele client'i register et
+    initial_clients = build_random_clients(count=10)
     server.register_clients(initial_clients)
     print("\n--- Initial Clients ---")
     for client in initial_clients:
         print(f"  {client.describe()}")
 
-    # 6 round simülasyonu
+    initial_clients_path = "outputs/initial_clients.json"
+    with open(initial_clients_path, "w", encoding="utf-8") as handle:
+        json.dump([client.to_dict() for client in initial_clients], handle, ensure_ascii=False, indent=2)
+    print(f"\nInitial client config saved to: {initial_clients_path}")
+
+    # 100 round simülasyonu
     print("\n" + "=" * 90)
-    print("Simulation: 6 Federated Learning Rounds")
+    print("Simulation: 100 Federated Learning Rounds")
     print("=" * 90)
 
-    for round_num in range(1, 7):
+    for round_num in range(1, config.rounds + 1):
         print(f"\n{'─' * 90}")
         print(f"ROUND {round_num}")
         print(f"{'─' * 90}")
-
-        # ===== Scenario: Round 3'de yeni clientlar gelsin =====
-        if round_num == 3:
-            print("\n📌 [Event] Round 3: New clients are joining the network!")
-            new_clients = [
-                Client(
-                    client_id=6,
-                    local_samples=88,
-                    digit_focus="0/1",
-                    cpu_power=2.5,
-                    data_quality=0.80,
-                    storage_capacity_gb=0.15,
-                    battery_level=85,
-                    connectivity="strong",
-                    engagement=0.77,
-                    local_epochs=2,
-                    label_histogram={0: 45, 1: 43},
-                ),
-                Client(
-                    client_id=7,
-                    local_samples=75,
-                    digit_focus="9",
-                    cpu_power=2.0,
-                    data_quality=0.72,
-                    storage_capacity_gb=0.12,
-                    battery_level=60,
-                    connectivity="medium",
-                    engagement=0.65,
-                    local_epochs=1,
-                    label_histogram={9: 75},
-                ),
-            ]
-            server.add_clients(new_clients)
-            print()
-
-        # ===== Scenario: Round 4'de bazı clientlar ayrılsın (low battery, disconnected) =====
-        if round_num == 4:
-            print("\n📌 [Event] Round 4: Client 4 has connectivity issues, Client 2 is leaving")
-            server.remove_clients([4, 2])
-            print()
 
         # State bilgisi göster
         print(f"\nServer: {server.describe()}")
@@ -121,6 +91,36 @@ def main() -> None:
               f"selected={entry['selected_count']}, "
               f"samples={entry['total_samples']}, "
               f"ids={entry['selected_client_ids']}")
+
+    # Log final simulation summary and per-client summary for replay
+    if logger:
+        per_client_summary = [
+            {
+                "client_id": c.client_id,
+                "total_participations": c.total_participations,
+                "final_battery": c.battery_level,
+                "final_engagement": c.engagement,
+            }
+            for c in server.all_clients
+        ]
+        logger.log_event("simulation_end", {
+            "rounds": config.rounds,
+            "aggregation_history": server.aggregation_history,
+            "per_client_summary": per_client_summary,
+            "initial_clients_path": initial_clients_path,
+            "comparison_summary_path": summary_path,
+        })
+        logger.close()
+
+    #print all clients local accuracy and server's global accuracy
+    print("\n" + "=" * 90)
+    print("Final Accuracy Summary")
+    print("=" * 90)
+    for client in server.all_clients:
+        print(f"  Client {client.client_id}: Local Accuracy = {client.local_model_accuracy:.4f}")
+
+    summary_path = server.export_comparison_summary("outputs/flower_comparison_summary.json")
+    print(f"\nComparison summary saved to: {summary_path}")
 
     print("\n" + "=" * 90)
     print(f"Simulation Complete ✓")

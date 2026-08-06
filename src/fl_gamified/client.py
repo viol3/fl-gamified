@@ -20,6 +20,7 @@ class Client:
     total_participations: int = 0
     previous_round_participated: bool = False
     fatigue: float = 0.0
+    local_model_accuracy: float = 0.5
 
     def _connectivity_drop_chance(self) -> float:
         if self.connectivity == "weak":
@@ -115,6 +116,72 @@ class Client:
             f"fatigue={self.fatigue:.2f} | "
             f"labels={histogram_text}"
         )
+
+    def to_dict(self) -> dict:
+        return {
+            "client_id": self.client_id,
+            "local_samples": self.local_samples,
+            "digit_focus": self.digit_focus,
+            "cpu_power": self.cpu_power,
+            "data_quality": self.data_quality,
+            "storage_capacity_gb": self.storage_capacity_gb,
+            "battery_level": self.battery_level,
+            "connectivity": self.connectivity,
+            "engagement": self.engagement,
+            "local_epochs": self.local_epochs,
+            "label_histogram": dict(self.label_histogram),
+            "participation_streak": self.participation_streak,
+            "total_participations": self.total_participations,
+            "previous_round_participated": self.previous_round_participated,
+            "fatigue": self.fatigue,
+            "local_model_accuracy": self.local_model_accuracy,
+        }
+
+
+def create_random_client(client_id: int, rng: Optional[random.Random] = None) -> Client:
+    if rng is None:
+        rng = random.Random()
+
+    local_samples = rng.randint(50, 200)
+    digit_count = rng.choice([1, 2, 3])
+    digit_pool = rng.sample(range(10), digit_count)
+    digit_focus = "/".join(str(digit) for digit in digit_pool)
+    cpu_power = round(rng.uniform(1.0, 4.0), 1)
+    data_quality = round(rng.uniform(0.5, 1.0), 2)
+    storage_capacity_gb = round(rng.uniform(0.1, 0.6), 2)
+    battery_level = rng.randint(20, 100)
+    connectivity = rng.choices(["weak", "medium", "strong"], weights=[2, 3, 5], k=1)[0]
+    engagement = round(rng.uniform(0.4, 1.0), 2)
+    local_epochs = rng.randint(1, 4)
+
+    histogram = {}
+    remaining = local_samples
+    for index, digit in enumerate(digit_pool):
+        if index == len(digit_pool) - 1:
+            count = remaining
+        else:
+            count = rng.randint(1, remaining - (len(digit_pool) - index - 1))
+        histogram[digit] = count
+        remaining -= count
+
+    return Client(
+        client_id=client_id,
+        local_samples=local_samples,
+        digit_focus=digit_focus,
+        cpu_power=cpu_power,
+        data_quality=data_quality,
+        storage_capacity_gb=storage_capacity_gb,
+        battery_level=battery_level,
+        connectivity=connectivity,
+        engagement=engagement,
+        local_epochs=local_epochs,
+        label_histogram=histogram,
+    )
+
+
+def build_random_clients(count: int = 10, seed: int | None = None) -> list[Client]:
+    rng = random.Random(seed) if seed is not None else random.SystemRandom()
+    return [create_random_client(client_id=index + 1, rng=rng) for index in range(count)]
 
 
 def build_demo_clients() -> list[Client]:
