@@ -15,12 +15,20 @@ def main() -> None:
 
     os.makedirs("outputs", exist_ok=True)
 
+    scenario_mode = 2  # 0 = base FL, 1 = static incentive, 2 = dynamic gamified FL
+    mode_labels = {
+        0: "Base FL",
+        1: "Static Incentive FL",
+        2: "Dynamic Gamified FL",
+    }
+
     # Server'ı initialize et
-    config = SimulationConfig(seed=42, rounds=100)
+    config = SimulationConfig(seed=42, rounds=100, mode=scenario_mode)
     logger = EventLogger(path="outputs/simulation_events.jsonl", mode="w")
     server = Server(config=config, logger=logger)
     server.initialize_model(input_dim=config.input_dim, num_classes=config.num_classes)
     print()
+    print(f"Active mode: {config.mode} ({mode_labels.get(config.mode, 'Unknown')})")
 
     # İlk 10 rastgele client'i register et
     initial_clients = build_random_clients(count=10)
@@ -92,6 +100,8 @@ def main() -> None:
               f"samples={entry['total_samples']}, "
               f"ids={entry['selected_client_ids']}")
 
+    summary_path = server.export_comparison_summary("outputs/flower_comparison_summary.json")
+
     # Log final simulation summary and per-client summary for replay
     if logger:
         per_client_summary = [
@@ -119,7 +129,6 @@ def main() -> None:
     for client in server.all_clients:
         print(f"  Client {client.client_id}: Local Accuracy = {client.local_model_accuracy:.4f}")
 
-    summary_path = server.export_comparison_summary("outputs/flower_comparison_summary.json")
     print(f"\nComparison summary saved to: {summary_path}")
 
     print("\n" + "=" * 90)

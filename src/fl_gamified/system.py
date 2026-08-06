@@ -210,13 +210,6 @@ class FLSystem:
             self._current_round_trained_clients.clear()
 
             for client in self.server.selected_clients:
-                reward = self.server._compute_reward_offer(client)
-                participates, details = client.decide_participation(reward_points=reward, rng=self.server.rng)
-
-                if not participates:
-                    print(f"  Client {client.client_id}: {details['reason']}")
-                    continue
-
                 self._current_round_trained_clients.append(client)
                 local_update = {
                     "coef": self.server.model_weights["coef"] + np.random.randn(*self.server.model_weights["coef"].shape) * 0.01,

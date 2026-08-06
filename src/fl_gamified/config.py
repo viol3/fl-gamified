@@ -6,6 +6,10 @@ class SimulationConfig:
     # Random seed
     seed: int = 42
 
+    # Scenario mode
+    # 0 = base FL, 1 = static incentive, 2 = dynamic gamified FL
+    mode: int = 2
+
     # Model
     input_dim: int = 64
     num_classes: int = 10
@@ -21,6 +25,7 @@ class SimulationConfig:
 
     # Reward parameters
     base_reward_offset: int = 4
+    static_reward_points: int = 8
     engagement_threshold: float = 0.4
     engagement_bonus: int = 3
     weak_connectivity_bonus: int = 2
@@ -36,6 +41,8 @@ class SimulationConfig:
 
     def __post_init__(self):
         # validate simple invariants
+        if self.mode not in (0, 1, 2):
+            self.mode = 2
         if self.max_reward < 0:
             self.max_reward = 15
         if self.min_accuracy > self.max_accuracy:

@@ -20,6 +20,7 @@ class Server:
     selected_clients: list[Client] = field(default_factory=list)
     round_number: int = 0
     aggregation_history: list[dict] = field(default_factory=list)
+    last_selection_details: list[dict] = field(default_factory=list)
     last_model_accuracy: float = 0.5
     rng: Optional[random.Random] = field(default=None, repr=False)
     logger: Optional[EventLogger] = field(default=None, repr=False)
@@ -117,6 +118,9 @@ class Server:
         - Reward: Temel reward + katılımcı özellikleri
         """
         self.selected_clients = []
+        self.last_selection_details = []
+
+        selection_rate = max(0.0, min(selection_rate, 1.0))
         
         for client in self.active_clients:
             # Temel uygunluk kontrolü
@@ -132,42 +136,74 @@ class Server:
 
             if not (connection_ok and battery_ok):
                 # Log why client was skipped
+                decision_details = {
+                    "reason": "ineligible",
+                    "score": 0.0,
+                    "fatigue_penalty": 0.0,
+                    "reward_bonus": 0.0,
+                    "drop_chance": 0.0,
+                }
+                selection_record = {
+                    "round": self.round_number,
+                    **self._client_ref(client),
+                    "mode": self.config.mode,
+                    "connection_ok": connection_ok,
+                    "battery_ok": battery_ok,
+                    "reward_offer": 0,
+                    "decision": decision_details,
+                    "selected": False,
+                    "selection_rate": selection_rate,
+                }
+                self.last_selection_details.append(selection_record)
                 if self.logger:
-                    self.logger.log_event("client_skipped", {
-                        "round": self.round_number,
-                        "client_id": client.client_id,
-                        "connection_ok": connection_ok,
-                        "battery_ok": battery_ok,
-                    })
+                    self.logger.log_event("client_skipped", selection_record)
                 continue
 
-            # Reward hesapla
-            reward_offer = self._compute_reward_offer(client)
+            if self.config.mode == 0:
+                reward_offer = 0
+                participates = self.rng.random() < selection_rate
+                details = {
+                    "reason": "base_selection",
+                    "score": selection_rate,
+                    "fatigue_penalty": 0.0,
+                    "reward_bonus": 0.0,
+                    "drop_chance": 0.0,
+                }
+            else:
+                reward_offer = self._compute_reward_offer(client)
 
-            # Client'a katılma kararı soralım
-            participates, details = client.decide_participation(
-                reward_points=reward_offer, 
-                rng=self.rng
-            )
+                # Client'a katılma kararı soralım
+                participates, details = client.decide_participation(
+                    reward_points=reward_offer,
+                    rng=self.rng,
+                )
+
+                if participates:
+                    participates = self.rng.random() < selection_rate
 
             # simulate submission latency for later replay (seconds)
             simulated_latency = float(self.rng.uniform(0.2, 5.0))
 
+            selection_record = {
+                "round": self.round_number,
+                **self._client_ref(client),
+                "mode": self.config.mode,
+                "connection_ok": connection_ok,
+                "battery_ok": battery_ok,
+                "reward_offer": reward_offer,
+                "decision": details,
+                "selected": participates,
+                "selection_rate": selection_rate,
+                "simulated_submission_latency": simulated_latency,
+            }
+            self.last_selection_details.append(selection_record)
+
             # Detailed per-client decision log
             if self.logger:
-                self.logger.log_event("client_decision", {
-                    "round": self.round_number,
-                    **self._client_ref(client),
-                    "connection_ok": connection_ok,
-                    "battery_ok": battery_ok,
-                    "reward_offer": reward_offer,
-                    "decision": details,
-                    "simulated_submission_latency": simulated_latency,
-                })
+                self.logger.log_event("client_decision", selection_record)
 
             if participates:
-                if self.rng.random() < selection_rate:
-                    self.selected_clients.append(client)
+                self.selected_clients.append(client)
         
         return self.selected_clients
     
@@ -175,12 +211,16 @@ class Server:
         """
         Client'a teklif etmek için reward miktarını hesapla.
         
-        - Base: round number + 4
+        - Mode 1: sabit ödül
+        - Mode 2: round number + 4 + katılımcı özellikleri
         - Low engagement: +3
         - Weak connectivity: +2
         - Didn't participate last round: +2
         - Max: 15
         """
+        if self.config.mode == 1:
+            return min(self.config.static_reward_points, self.config.max_reward)
+
         reward = self.config.base_reward_offset + self.round_number
         if client.engagement < self.config.engagement_threshold:
             reward += self.config.engagement_bonus
