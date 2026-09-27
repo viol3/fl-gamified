@@ -7,6 +7,7 @@ from typing import Optional
 from .config import SimulationConfig
 from .logger import EventLogger
 from .client import Client
+from .privacy import DP_SEED_OFFSET, clip_delta, compute_epsilon
 
 
 @dataclass
@@ -24,10 +25,14 @@ class Server:
     last_model_accuracy: float = 0.5
     rng: Optional[random.Random] = field(default=None, repr=False)
     logger: Optional[EventLogger] = field(default=None, repr=False)
+    dp_releases: int = 0
+    dp_clipped_updates: int = 0
+    dp_total_updates: int = 0
 
     def __post_init__(self):
         if self.rng is None:
             self.rng = random.Random(self.config.seed)
+        self.dp_rng = np.random.default_rng(self.config.seed + DP_SEED_OFFSET)
 
     def _client_snapshot(self, client: Client) -> dict:
         return {
@@ -176,6 +181,7 @@ class Server:
                 participates, details = client.decide_participation(
                     reward_points=reward_offer,
                     rng=self.rng,
+                    reward_bonus_cap=self.config.reward_bonus_cap,
                 )
 
                 if participates:
@@ -209,14 +215,12 @@ class Server:
     
     def _compute_reward_offer(self, client: Client) -> int:
         """
-        Client'a teklif etmek için reward miktarını hesapla.
-        
-        - Mode 1: sabit ödül
-        - Mode 2: round number + 4 + katılımcı özellikleri
-        - Low engagement: +3
-        - Weak connectivity: +2
-        - Didn't participate last round: +2
-        - Max: 15
+        Client'a teklif etmek için reward miktarını hesapla (bkz. config.py).
+
+        - Mode 1: sabit ödül (static_reward_points, max_reward'a kırpılır)
+        - Mode 2: base_reward_offset + round number + katılımcı özellikleri
+          (engagement_bonus, weak_connectivity_bonus, previous_participation_bonus),
+          max_reward'a kırpılır
         """
         if self.config.mode == 1:
             return min(self.config.static_reward_points, self.config.max_reward)
@@ -251,8 +255,53 @@ class Server:
             weight = sample_count / total_samples
             aggregated_weights['coef'] += weight * client_update['coef']
             aggregated_weights['intercept'] += weight * client_update['intercept']
-        
+
         return aggregated_weights
+
+    def aggregate_weights_dp(self, client_updates: list[dict], client_sample_counts: list[int]) -> dict:
+        """
+        DP-FedAvg (McMahan et al. 2018) - kırpılmış farkların gürültülü, ağırlıklı ortalaması.
+
+        Ağırlıklar w_k = min(n_k / n_max, 1) ile sınırlandığı için tek bir client'ın toplam
+        üzerindeki etkisi (duyarlılık) en fazla dp_clip_norm olur. Payda, seçilen client'lara
+        bağlı olmayan sabit bir değerdir: selection_rate * sum(w_k, tüm client'lar).
+        """
+        clip_norm = self.config.dp_clip_norm
+        max_samples = max(c.local_samples for c in self.all_clients)
+        fixed_denominator = self.config.selection_rate * sum(
+            min(c.local_samples / max_samples, 1.0) for c in self.all_clients
+        )
+
+        delta_sum = {
+            'coef': np.zeros_like(self.model_weights['coef']),
+            'intercept': np.zeros_like(self.model_weights['intercept']),
+        }
+        for client_update, sample_count in zip(client_updates, client_sample_counts):
+            delta = {
+                'coef': client_update['coef'] - self.model_weights['coef'],
+                'intercept': client_update['intercept'] - self.model_weights['intercept'],
+            }
+            clipped, _, was_clipped = clip_delta(delta, clip_norm)
+            self.dp_clipped_updates += int(was_clipped)
+            self.dp_total_updates += 1
+            weight = min(sample_count / max_samples, 1.0)
+            delta_sum['coef'] += weight * clipped['coef']
+            delta_sum['intercept'] += weight * clipped['intercept']
+
+        noise_std = self.config.dp_noise_multiplier * clip_norm
+        delta_sum['coef'] += self.dp_rng.normal(0.0, noise_std, size=delta_sum['coef'].shape)
+        delta_sum['intercept'] += self.dp_rng.normal(0.0, noise_std, size=delta_sum['intercept'].shape)
+        self.dp_releases += 1
+
+        return {
+            'coef': self.model_weights['coef'] + delta_sum['coef'] / fixed_denominator,
+            'intercept': self.model_weights['intercept'] + delta_sum['intercept'] / fixed_denominator,
+        }
+
+    def dp_epsilon(self) -> float:
+        if not self.config.dp_enabled:
+            return 0.0
+        return compute_epsilon(self.config.dp_noise_multiplier, self.dp_releases, self.config.dp_delta)
 
     def update_model(self, aggregated_weights: dict, learning_rate: float = 1.0):
         """Global modeli yeni ağırlıklarla güncelle."""
@@ -373,7 +422,10 @@ class Server:
         
         # Aggregasyon
         if client_updates:
-            aggregated = self.aggregate_weights(client_updates, sample_counts)
+            if self.config.dp_enabled:
+                aggregated = self.aggregate_weights_dp(client_updates, sample_counts)
+            else:
+                aggregated = self.aggregate_weights(client_updates, sample_counts)
             self.update_model(aggregated)
             self._evaluate_model(selected)
             if self.logger:
@@ -402,6 +454,8 @@ class Server:
             'selected_client_ids': [c.client_id for c in selected],
             'trained_client_ids': [c.client_id for c in selected],
             'model_accuracy': self.last_model_accuracy,
+            'weight_norm': self._calculate_weight_magnitude(),
+            'dp_epsilon': self.dp_epsilon(),
         }
         self.aggregation_history.append(round_info)
 
@@ -427,6 +481,16 @@ class Server:
                 for client in self.all_clients
             ],
             "final_model_accuracy": self.last_model_accuracy,
+            "dp": {
+                "enabled": self.config.dp_enabled,
+                "clip_norm": self.config.dp_clip_norm,
+                "noise_multiplier": self.config.dp_noise_multiplier,
+                "delta": self.config.dp_delta,
+                "releases": self.dp_releases,
+                "clipped_updates": self.dp_clipped_updates,
+                "total_updates": self.dp_total_updates,
+                "epsilon": self.dp_epsilon(),
+            },
         }
 
     def export_comparison_summary(self, path: str = "outputs/flower_comparison_summary.json") -> str:

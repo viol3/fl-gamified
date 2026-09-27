@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 from src.fl_gamified.client import build_random_clients
 from src.fl_gamified.server import Server
@@ -15,12 +16,15 @@ def main() -> None:
 
     os.makedirs("outputs", exist_ok=True)
 
-    scenario_mode = 2  # 0 = base FL, 1 = static incentive, 2 = dynamic gamified FL
+    scenario_mode = 0  # 0 = base FL, 1 = static incentive, 2 = dynamic gamified FL
     mode_labels = {
         0: "Base FL",
         1: "Static Incentive FL",
         2: "Dynamic Gamified FL",
     }
+    # Matches Unity's OnReportButtonClick mode naming (standart/static/dynamic)
+    mode_file_tag = "standart" if scenario_mode == 0 else "static" if scenario_mode == 1 else "dynamic"
+    run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # Server'ı initialize et
     config = SimulationConfig(seed=42, rounds=100, mode=scenario_mode)
@@ -100,7 +104,9 @@ def main() -> None:
               f"samples={entry['total_samples']}, "
               f"ids={entry['selected_client_ids']}")
 
-    summary_path = server.export_comparison_summary("outputs/flower_comparison_summary.json")
+    summary_path = server.export_comparison_summary(
+        f"outputs/flower_comparison_summary_{mode_file_tag}_{run_timestamp}.json"
+    )
 
     # Log final simulation summary and per-client summary for replay
     if logger:

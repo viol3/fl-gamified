@@ -1,0 +1,2197 @@
+{
+  "config": {
+    "seed": 105,
+    "mode": 1,
+    "input_dim": 64,
+    "num_classes": 10,
+    "min_accuracy": 0.5,
+    "max_accuracy": 0.95,
+    "accuracy_reward_scale": 10.0,
+    "selection_rate": 0.6,
+    "weak_connection_skip_prob": 0.1,
+    "low_battery_threshold": 20,
+    "low_battery_pass_prob": 0.1,
+    "base_reward_offset": 7,
+    "static_reward_points": 8,
+    "engagement_threshold": 0.65,
+    "engagement_bonus": 3,
+    "weak_connectivity_bonus": 5,
+    "previous_participation_bonus": 2,
+    "max_reward": 40,
+    "reward_bonus_cap": 0.4,
+    "dp_enabled": true,
+    "dp_clip_norm": 0.25,
+    "dp_noise_multiplier": 1.0,
+    "dp_delta": 1e-05,
+    "rounds": 100,
+    "battery_drain_per_round": 6,
+    "battery_recharge_idle": 3
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "active_clients": 10,
+      "selected_count": 1,
+      "trained_count": 1,
+      "total_samples": 61,
+      "selected_client_ids": [
+        5
+      ],
+      "trained_client_ids": [
+        5
+      ],
+      "model_accuracy": 0.7037959518828382,
+      "weight_norm": 1.9730017686171883,
+      "dp_epsilon": 4.728507067217623
+    },
+    {
+      "round": 2,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 492,
+      "selected_client_ids": [
+        1,
+        4,
+        5,
+        7,
+        9
+      ],
+      "trained_client_ids": [
+        1,
+        4,
+        5,
+        7,
+        9
+      ],
+      "model_accuracy": 0.7493199005959332,
+      "weight_norm": 2.7834585639996567,
+      "dp_epsilon": 7.077391578166641
+    },
+    {
+      "round": 3,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 391,
+      "selected_client_ids": [
+        3,
+        4,
+        8,
+        9
+      ],
+      "trained_client_ids": [
+        3,
+        4,
+        8,
+        9
+      ],
+      "model_accuracy": 0.7623890307227847,
+      "weight_norm": 3.245704569366315,
+      "dp_epsilon": 9.009958991683897
+    },
+    {
+      "round": 4,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 503,
+      "selected_client_ids": [
+        4,
+        6,
+        7,
+        8
+      ],
+      "trained_client_ids": [
+        4,
+        6,
+        7,
+        8
+      ],
+      "model_accuracy": 0.788337060556557,
+      "weight_norm": 3.846300725107402,
+      "dp_epsilon": 10.725509696418232
+    },
+    {
+      "round": 5,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 288,
+      "selected_client_ids": [
+        2,
+        7,
+        9
+      ],
+      "trained_client_ids": [
+        2,
+        7,
+        9
+      ],
+      "model_accuracy": 0.7871472541643051,
+      "weight_norm": 4.305529457522665,
+      "dp_epsilon": 12.301691480042894
+    },
+    {
+      "round": 6,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 380,
+      "selected_client_ids": [
+        3,
+        4,
+        5,
+        7
+      ],
+      "trained_client_ids": [
+        3,
+        4,
+        5,
+        7
+      ],
+      "model_accuracy": 0.8479522332773461,
+      "weight_norm": 4.7391959332720806,
+      "dp_epsilon": 13.776203532326175
+    },
+    {
+      "round": 7,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 306,
+      "selected_client_ids": [
+        3,
+        4,
+        8
+      ],
+      "trained_client_ids": [
+        3,
+        4,
+        8
+      ],
+      "model_accuracy": 0.8239556676638673,
+      "weight_norm": 5.14831470972637,
+      "dp_epsilon": 15.17541982626362
+    },
+    {
+      "round": 8,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 296,
+      "selected_client_ids": [
+        2,
+        4,
+        9
+      ],
+      "trained_client_ids": [
+        2,
+        4,
+        9
+      ],
+      "model_accuracy": 0.827809432883577,
+      "weight_norm": 5.544490871010289,
+      "dp_epsilon": 16.512875946682545
+    },
+    {
+      "round": 9,
+      "active_clients": 10,
+      "selected_count": 1,
+      "trained_count": 1,
+      "total_samples": 191,
+      "selected_client_ids": [
+        10
+      ],
+      "trained_client_ids": [
+        10
+      ],
+      "model_accuracy": 0.814765447113564,
+      "weight_norm": 5.790249523555993,
+      "dp_epsilon": 17.803597531631393
+    },
+    {
+      "round": 10,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 251,
+      "selected_client_ids": [
+        2,
+        5,
+        8
+      ],
+      "trained_client_ids": [
+        2,
+        5,
+        8
+      ],
+      "model_accuracy": 0.8123945946879012,
+      "weight_norm": 6.171191358077426,
+      "dp_epsilon": 19.053597531631393
+    },
+    {
+      "round": 11,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 461,
+      "selected_client_ids": [
+        1,
+        3,
+        7,
+        8,
+        9
+      ],
+      "trained_client_ids": [
+        1,
+        3,
+        7,
+        8,
+        9
+      ],
+      "model_accuracy": 0.8355363379590495,
+      "weight_norm": 6.49678877719902,
+      "dp_epsilon": 20.25918687613612
+    },
+    {
+      "round": 12,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 389,
+      "selected_client_ids": [
+        2,
+        4,
+        5,
+        8
+      ],
+      "trained_client_ids": [
+        2,
+        4,
+        5,
+        8
+      ],
+      "model_accuracy": 0.8459095482654302,
+      "weight_norm": 6.722131900440173,
+      "dp_epsilon": 21.44485232771325
+    },
+    {
+      "round": 13,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 315,
+      "selected_client_ids": [
+        3,
+        5,
+        6,
+        9
+      ],
+      "trained_client_ids": [
+        3,
+        5,
+        6,
+        9
+      ],
+      "model_accuracy": 0.8152795348605306,
+      "weight_norm": 7.005867817263254,
+      "dp_epsilon": 22.59485232771325
+    },
+    {
+      "round": 14,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 474,
+      "selected_client_ids": [
+        2,
+        4,
+        5,
+        8,
+        9
+      ],
+      "trained_client_ids": [
+        2,
+        4,
+        5,
+        8,
+        9
+      ],
+      "model_accuracy": 0.8476224308936893,
+      "weight_norm": 7.405280525496568,
+      "dp_epsilon": 23.730920950267983
+    },
+    {
+      "round": 15,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 520,
+      "selected_client_ids": [
+        4,
+        5,
+        7,
+        10
+      ],
+      "trained_client_ids": [
+        4,
+        5,
+        7,
+        10
+      ],
+      "model_accuracy": 0.8604336631892553,
+      "weight_norm": 7.613993454959265,
+      "dp_epsilon": 24.83092095026798
+    },
+    {
+      "round": 16,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 572,
+      "selected_client_ids": [
+        2,
+        5,
+        7,
+        8,
+        10
+      ],
+      "trained_client_ids": [
+        2,
+        5,
+        7,
+        8,
+        10
+      ],
+      "model_accuracy": 0.8495234393579333,
+      "weight_norm": 7.805194033609538,
+      "dp_epsilon": 25.930920950267982
+    },
+    {
+      "round": 17,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 538,
+      "selected_client_ids": [
+        2,
+        3,
+        4,
+        9,
+        10
+      ],
+      "trained_client_ids": [
+        2,
+        3,
+        4,
+        9,
+        10
+      ],
+      "model_accuracy": 0.8326495944987115,
+      "weight_norm": 8.23727476032408,
+      "dp_epsilon": 26.995180217112086
+    },
+    {
+      "round": 18,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 307,
+      "selected_client_ids": [
+        3,
+        4,
+        6
+      ],
+      "trained_client_ids": [
+        3,
+        4,
+        6
+      ],
+      "model_accuracy": 0.8305537769758761,
+      "weight_norm": 8.434954385544177,
+      "dp_epsilon": 28.045180217112083
+    },
+    {
+      "round": 19,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 134,
+      "selected_client_ids": [
+        2,
+        5
+      ],
+      "trained_client_ids": [
+        2,
+        5
+      ],
+      "model_accuracy": 0.8175711322252401,
+      "weight_norm": 8.534105390730252,
+      "dp_epsilon": 29.09518021711208
+    },
+    {
+      "round": 20,
+      "active_clients": 10,
+      "selected_count": 6,
+      "trained_count": 6,
+      "total_samples": 592,
+      "selected_client_ids": [
+        2,
+        4,
+        5,
+        6,
+        8,
+        9
+      ],
+      "trained_client_ids": [
+        2,
+        4,
+        5,
+        6,
+        8,
+        9
+      ],
+      "model_accuracy": 0.8497657899537524,
+      "weight_norm": 8.840778212040162,
+      "dp_epsilon": 30.12663110385034
+    },
+    {
+      "round": 21,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 328,
+      "selected_client_ids": [
+        2,
+        4,
+        8
+      ],
+      "trained_client_ids": [
+        2,
+        4,
+        8
+      ],
+      "model_accuracy": 0.832263318033141,
+      "weight_norm": 9.093293076616897,
+      "dp_epsilon": 31.12663110385034
+    },
+    {
+      "round": 22,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 341,
+      "selected_client_ids": [
+        1,
+        5,
+        8,
+        9
+      ],
+      "trained_client_ids": [
+        1,
+        5,
+        8,
+        9
+      ],
+      "model_accuracy": 0.829245195301108,
+      "weight_norm": 9.27411615156802,
+      "dp_epsilon": 32.12663110385034
+    },
+    {
+      "round": 23,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 235,
+      "selected_client_ids": [
+        6,
+        8
+      ],
+      "trained_client_ids": [
+        6,
+        8
+      ],
+      "model_accuracy": 0.8118600361183445,
+      "weight_norm": 9.638037741725086,
+      "dp_epsilon": 33.12663110385034
+    },
+    {
+      "round": 24,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 181,
+      "selected_client_ids": [
+        3,
+        7
+      ],
+      "trained_client_ids": [
+        3,
+        7
+      ],
+      "model_accuracy": 0.8075945026299797,
+      "weight_norm": 9.790174002847133,
+      "dp_epsilon": 34.12663110385034
+    },
+    {
+      "round": 25,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 465,
+      "selected_client_ids": [
+        3,
+        4,
+        5,
+        7,
+        9
+      ],
+      "trained_client_ids": [
+        3,
+        4,
+        5,
+        7,
+        9
+      ],
+      "model_accuracy": 0.856250470875788,
+      "weight_norm": 9.929982104879418,
+      "dp_epsilon": 35.08175401905626
+    },
+    {
+      "round": 26,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 331,
+      "selected_client_ids": [
+        1,
+        3,
+        8,
+        9
+      ],
+      "trained_client_ids": [
+        1,
+        3,
+        8,
+        9
+      ],
+      "model_accuracy": 0.8151079006124853,
+      "weight_norm": 10.213474250440774,
+      "dp_epsilon": 36.031754019056265
+    },
+    {
+      "round": 27,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 313,
+      "selected_client_ids": [
+        1,
+        6,
+        8
+      ],
+      "trained_client_ids": [
+        1,
+        6,
+        8
+      ],
+      "model_accuracy": 0.8138729641269135,
+      "weight_norm": 10.51814499308115,
+      "dp_epsilon": 36.98175401905626
+    },
+    {
+      "round": 28,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 498,
+      "selected_client_ids": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "trained_client_ids": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "model_accuracy": 0.8591148503764001,
+      "weight_norm": 10.82693530800949,
+      "dp_epsilon": 37.93175401905626
+    },
+    {
+      "round": 29,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 325,
+      "selected_client_ids": [
+        2,
+        5,
+        10
+      ],
+      "trained_client_ids": [
+        2,
+        5,
+        10
+      ],
+      "model_accuracy": 0.8261880066957195,
+      "weight_norm": 10.962301718802003,
+      "dp_epsilon": 38.88175401905626
+    },
+    {
+      "round": 30,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 293,
+      "selected_client_ids": [
+        1,
+        7,
+        9
+      ],
+      "trained_client_ids": [
+        1,
+        7,
+        9
+      ],
+      "model_accuracy": 0.8200792687682666,
+      "weight_norm": 10.93205230705722,
+      "dp_epsilon": 39.83175401905626
+    },
+    {
+      "round": 31,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 471,
+      "selected_client_ids": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "trained_client_ids": [
+        4,
+        6,
+        7,
+        9
+      ],
+      "model_accuracy": 0.8490575735507712,
+      "weight_norm": 11.188425501478964,
+      "dp_epsilon": 40.74549328386881
+    },
+    {
+      "round": 32,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 406,
+      "selected_client_ids": [
+        7,
+        9,
+        10
+      ],
+      "trained_client_ids": [
+        7,
+        9,
+        10
+      ],
+      "model_accuracy": 0.8250972555785986,
+      "weight_norm": 11.344058808233095,
+      "dp_epsilon": 41.64549328386881
+    },
+    {
+      "round": 33,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 381,
+      "selected_client_ids": [
+        1,
+        2,
+        3,
+        5,
+        6
+      ],
+      "trained_client_ids": [
+        1,
+        2,
+        3,
+        5,
+        6
+      ],
+      "model_accuracy": 0.8223849003991527,
+      "weight_norm": 11.50480619452647,
+      "dp_epsilon": 42.54549328386881
+    },
+    {
+      "round": 34,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 507,
+      "selected_client_ids": [
+        4,
+        5,
+        8,
+        10
+      ],
+      "trained_client_ids": [
+        4,
+        5,
+        8,
+        10
+      ],
+      "model_accuracy": 0.8492710124555944,
+      "weight_norm": 11.632509092605597,
+      "dp_epsilon": 43.445493283868814
+    },
+    {
+      "round": 35,
+      "active_clients": 10,
+      "selected_count": 1,
+      "trained_count": 1,
+      "total_samples": 117,
+      "selected_client_ids": [
+        8
+      ],
+      "trained_client_ids": [
+        8
+      ],
+      "model_accuracy": 0.8039649437430502,
+      "weight_norm": 11.787426947238794,
+      "dp_epsilon": 44.345493283868805
+    },
+    {
+      "round": 36,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 281,
+      "selected_client_ids": [
+        1,
+        2,
+        7
+      ],
+      "trained_client_ids": [
+        1,
+        2,
+        7
+      ],
+      "model_accuracy": 0.8195169826258839,
+      "weight_norm": 11.86834470883561,
+      "dp_epsilon": 45.24549328386881
+    },
+    {
+      "round": 37,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 284,
+      "selected_client_ids": [
+        4,
+        5,
+        9
+      ],
+      "trained_client_ids": [
+        4,
+        5,
+        9
+      ],
+      "model_accuracy": 0.8260718154361778,
+      "weight_norm": 11.954353429019143,
+      "dp_epsilon": 46.14549328386882
+    },
+    {
+      "round": 38,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 510,
+      "selected_client_ids": [
+        3,
+        4,
+        7,
+        10
+      ],
+      "trained_client_ids": [
+        3,
+        4,
+        7,
+        10
+      ],
+      "model_accuracy": 0.8347451215522197,
+      "weight_norm": 12.091627876684129,
+      "dp_epsilon": 47.04549328386881
+    },
+    {
+      "round": 39,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 494,
+      "selected_client_ids": [
+        1,
+        3,
+        6,
+        7,
+        8
+      ],
+      "trained_client_ids": [
+        1,
+        3,
+        6,
+        7,
+        8
+      ],
+      "model_accuracy": 0.8342872351452051,
+      "weight_norm": 12.202767529094382,
+      "dp_epsilon": 47.945493283868814
+    },
+    {
+      "round": 40,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 255,
+      "selected_client_ids": [
+        4,
+        8
+      ],
+      "trained_client_ids": [
+        4,
+        8
+      ],
+      "model_accuracy": 0.8385982217059932,
+      "weight_norm": 12.254292882509185,
+      "dp_epsilon": 48.80169282486775
+    },
+    {
+      "round": 41,
+      "active_clients": 10,
+      "selected_count": 8,
+      "trained_count": 8,
+      "total_samples": 874,
+      "selected_client_ids": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10
+      ],
+      "trained_client_ids": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        9,
+        10
+      ],
+      "model_accuracy": 0.8735143993539622,
+      "weight_norm": 12.462387998033151,
+      "dp_epsilon": 49.65169282486775
+    },
+    {
+      "round": 42,
+      "active_clients": 10,
+      "selected_count": 1,
+      "trained_count": 1,
+      "total_samples": 191,
+      "selected_client_ids": [
+        10
+      ],
+      "trained_client_ids": [
+        10
+      ],
+      "model_accuracy": 0.80223216242369,
+      "weight_norm": 12.552374945339313,
+      "dp_epsilon": 50.501692824867746
+    },
+    {
+      "round": 43,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 276,
+      "selected_client_ids": [
+        5,
+        7,
+        9
+      ],
+      "trained_client_ids": [
+        5,
+        7,
+        9
+      ],
+      "model_accuracy": 0.8402960526578319,
+      "weight_norm": 12.743629577105867,
+      "dp_epsilon": 51.35169282486775
+    },
+    {
+      "round": 44,
+      "active_clients": 10,
+      "selected_count": 0,
+      "trained_count": 0,
+      "total_samples": 0,
+      "selected_client_ids": [],
+      "trained_client_ids": [],
+      "model_accuracy": 0.8402960526578319,
+      "weight_norm": 12.743629577105867,
+      "dp_epsilon": 51.35169282486775
+    },
+    {
+      "round": 45,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 367,
+      "selected_client_ids": [
+        3,
+        4,
+        5,
+        8
+      ],
+      "trained_client_ids": [
+        3,
+        4,
+        5,
+        8
+      ],
+      "model_accuracy": 0.8374498136512608,
+      "weight_norm": 12.903621348277744,
+      "dp_epsilon": 52.20169282486775
+    },
+    {
+      "round": 46,
+      "active_clients": 10,
+      "selected_count": 1,
+      "trained_count": 1,
+      "total_samples": 117,
+      "selected_client_ids": [
+        8
+      ],
+      "trained_client_ids": [
+        8
+      ],
+      "model_accuracy": 0.8124678187355878,
+      "weight_norm": 12.988603273946016,
+      "dp_epsilon": 53.05169282486775
+    },
+    {
+      "round": 47,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 134,
+      "selected_client_ids": [
+        2,
+        5
+      ],
+      "trained_client_ids": [
+        2,
+        5
+      ],
+      "model_accuracy": 0.8133225327572888,
+      "weight_norm": 13.091677358106715,
+      "dp_epsilon": 53.90169282486775
+    },
+    {
+      "round": 48,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 434,
+      "selected_client_ids": [
+        4,
+        5,
+        6,
+        8
+      ],
+      "trained_client_ids": [
+        4,
+        5,
+        6,
+        8
+      ],
+      "model_accuracy": 0.8506252477859586,
+      "weight_norm": 13.230043380834992,
+      "dp_epsilon": 54.751692824867746
+    },
+    {
+      "round": 49,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 136,
+      "selected_client_ids": [
+        3,
+        9
+      ],
+      "trained_client_ids": [
+        3,
+        9
+      ],
+      "model_accuracy": 0.7817123301596927,
+      "weight_norm": 13.311128811708404,
+      "dp_epsilon": 55.60169282486775
+    },
+    {
+      "round": 50,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 459,
+      "selected_client_ids": [
+        1,
+        5,
+        6,
+        8,
+        9
+      ],
+      "trained_client_ids": [
+        1,
+        5,
+        6,
+        8,
+        9
+      ],
+      "model_accuracy": 0.8404462963904078,
+      "weight_norm": 13.5444981487969,
+      "dp_epsilon": 56.45169282486775
+    },
+    {
+      "round": 51,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 309,
+      "selected_client_ids": [
+        6,
+        10
+      ],
+      "trained_client_ids": [
+        6,
+        10
+      ],
+      "model_accuracy": 0.7981095394059141,
+      "weight_norm": 13.784678035444811,
+      "dp_epsilon": 57.30169282486775
+    },
+    {
+      "round": 52,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 267,
+      "selected_client_ids": [
+        1,
+        3,
+        4
+      ],
+      "trained_client_ids": [
+        1,
+        3,
+        4
+      ],
+      "model_accuracy": 0.8142418876731135,
+      "weight_norm": 13.875414942718715,
+      "dp_epsilon": 58.15169282486775
+    },
+    {
+      "round": 53,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 432,
+      "selected_client_ids": [
+        2,
+        3,
+        8,
+        10
+      ],
+      "trained_client_ids": [
+        2,
+        3,
+        8,
+        10
+      ],
+      "model_accuracy": 0.8226316913587493,
+      "weight_norm": 14.085935275128515,
+      "dp_epsilon": 59.001692824867746
+    },
+    {
+      "round": 54,
+      "active_clients": 10,
+      "selected_count": 0,
+      "trained_count": 0,
+      "total_samples": 0,
+      "selected_client_ids": [],
+      "trained_client_ids": [],
+      "model_accuracy": 0.8226316913587493,
+      "weight_norm": 14.085935275128515,
+      "dp_epsilon": 59.001692824867746
+    },
+    {
+      "round": 55,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 419,
+      "selected_client_ids": [
+        1,
+        4,
+        6,
+        9
+      ],
+      "trained_client_ids": [
+        1,
+        4,
+        6,
+        9
+      ],
+      "model_accuracy": 0.830986946497787,
+      "weight_norm": 14.135630958477122,
+      "dp_epsilon": 59.824040473195765
+    },
+    {
+      "round": 56,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 203,
+      "selected_client_ids": [
+        2,
+        7
+      ],
+      "trained_client_ids": [
+        2,
+        7
+      ],
+      "model_accuracy": 0.8039047427720829,
+      "weight_norm": 14.267415073794663,
+      "dp_epsilon": 60.62404047319576
+    },
+    {
+      "round": 57,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 268,
+      "selected_client_ids": [
+        4,
+        7
+      ],
+      "trained_client_ids": [
+        4,
+        7
+      ],
+      "model_accuracy": 0.8387392612381082,
+      "weight_norm": 14.508168769799527,
+      "dp_epsilon": 61.42404047319576
+    },
+    {
+      "round": 58,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 511,
+      "selected_client_ids": [
+        6,
+        8,
+        9,
+        10
+      ],
+      "trained_client_ids": [
+        6,
+        8,
+        9,
+        10
+      ],
+      "model_accuracy": 0.8303488505485908,
+      "weight_norm": 14.594760590881759,
+      "dp_epsilon": 62.224040473195764
+    },
+    {
+      "round": 59,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 577,
+      "selected_client_ids": [
+        1,
+        2,
+        6,
+        8,
+        10
+      ],
+      "trained_client_ids": [
+        1,
+        2,
+        6,
+        8,
+        10
+      ],
+      "model_accuracy": 0.8382128807612707,
+      "weight_norm": 14.829073752472533,
+      "dp_epsilon": 63.02404047319576
+    },
+    {
+      "round": 60,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 605,
+      "selected_client_ids": [
+        4,
+        5,
+        7,
+        9,
+        10
+      ],
+      "trained_client_ids": [
+        4,
+        5,
+        7,
+        9,
+        10
+      ],
+      "model_accuracy": 0.8612946958849469,
+      "weight_norm": 14.966005588980611,
+      "dp_epsilon": 63.824040473195765
+    },
+    {
+      "round": 61,
+      "active_clients": 10,
+      "selected_count": 7,
+      "trained_count": 7,
+      "total_samples": 800,
+      "selected_client_ids": [
+        1,
+        2,
+        4,
+        6,
+        8,
+        9,
+        10
+      ],
+      "trained_client_ids": [
+        1,
+        2,
+        4,
+        6,
+        8,
+        9,
+        10
+      ],
+      "model_accuracy": 0.8566925602481653,
+      "weight_norm": 15.048107426282153,
+      "dp_epsilon": 64.62404047319576
+    },
+    {
+      "round": 62,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 329,
+      "selected_client_ids": [
+        1,
+        2,
+        5,
+        8
+      ],
+      "trained_client_ids": [
+        1,
+        2,
+        5,
+        8
+      ],
+      "model_accuracy": 0.821502557997695,
+      "weight_norm": 15.232386196489369,
+      "dp_epsilon": 65.42404047319576
+    },
+    {
+      "round": 63,
+      "active_clients": 10,
+      "selected_count": 6,
+      "trained_count": 6,
+      "total_samples": 545,
+      "selected_client_ids": [
+        1,
+        2,
+        5,
+        6,
+        7,
+        9
+      ],
+      "trained_client_ids": [
+        1,
+        2,
+        5,
+        6,
+        7,
+        9
+      ],
+      "model_accuracy": 0.8373692600274953,
+      "weight_norm": 15.38058629737911,
+      "dp_epsilon": 66.22404047319577
+    },
+    {
+      "round": 64,
+      "active_clients": 10,
+      "selected_count": 6,
+      "trained_count": 6,
+      "total_samples": 710,
+      "selected_client_ids": [
+        4,
+        5,
+        6,
+        8,
+        9,
+        10
+      ],
+      "trained_client_ids": [
+        4,
+        5,
+        6,
+        8,
+        9,
+        10
+      ],
+      "model_accuracy": 0.8495665233666708,
+      "weight_norm": 15.576552145414698,
+      "dp_epsilon": 67.02404047319575
+    },
+    {
+      "round": 65,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 382,
+      "selected_client_ids": [
+        2,
+        6,
+        10
+      ],
+      "trained_client_ids": [
+        2,
+        6,
+        10
+      ],
+      "model_accuracy": 0.8080611780365683,
+      "weight_norm": 15.668124324616738,
+      "dp_epsilon": 67.82404047319577
+    },
+    {
+      "round": 66,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 267,
+      "selected_client_ids": [
+        1,
+        3,
+        4
+      ],
+      "trained_client_ids": [
+        1,
+        3,
+        4
+      ],
+      "model_accuracy": 0.8138509348793252,
+      "weight_norm": 15.676716697194607,
+      "dp_epsilon": 68.62404047319576
+    },
+    {
+      "round": 67,
+      "active_clients": 10,
+      "selected_count": 1,
+      "trained_count": 1,
+      "total_samples": 117,
+      "selected_client_ids": [
+        8
+      ],
+      "trained_client_ids": [
+        8
+      ],
+      "model_accuracy": 0.7939406798638572,
+      "weight_norm": 15.845122559588464,
+      "dp_epsilon": 69.42404047319576
+    },
+    {
+      "round": 68,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 301,
+      "selected_client_ids": [
+        1,
+        4,
+        9
+      ],
+      "trained_client_ids": [
+        1,
+        4,
+        9
+      ],
+      "model_accuracy": 0.8265140904934251,
+      "weight_norm": 16.05653000915002,
+      "dp_epsilon": 70.22404047319577
+    },
+    {
+      "round": 69,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 248,
+      "selected_client_ids": [
+        6,
+        7
+      ],
+      "trained_client_ids": [
+        6,
+        7
+      ],
+      "model_accuracy": 0.8250727292806677,
+      "weight_norm": 16.022258305276416,
+      "dp_epsilon": 71.02404047319575
+    },
+    {
+      "round": 70,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 235,
+      "selected_client_ids": [
+        6,
+        8
+      ],
+      "trained_client_ids": [
+        6,
+        8
+      ],
+      "model_accuracy": 0.8138402940472264,
+      "weight_norm": 15.927211635974048,
+      "dp_epsilon": 71.82404047319577
+    },
+    {
+      "round": 71,
+      "active_clients": 10,
+      "selected_count": 1,
+      "trained_count": 1,
+      "total_samples": 138,
+      "selected_client_ids": [
+        4
+      ],
+      "trained_client_ids": [
+        4
+      ],
+      "model_accuracy": 0.834014595258296,
+      "weight_norm": 16.15180117551464,
+      "dp_epsilon": 72.62404047319576
+    },
+    {
+      "round": 72,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 139,
+      "selected_client_ids": [
+        1,
+        5
+      ],
+      "trained_client_ids": [
+        1,
+        5
+      ],
+      "model_accuracy": 0.8067734901262523,
+      "weight_norm": 16.269842565244684,
+      "dp_epsilon": 73.42404047319576
+    },
+    {
+      "round": 73,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 235,
+      "selected_client_ids": [
+        6,
+        8
+      ],
+      "trained_client_ids": [
+        6,
+        8
+      ],
+      "model_accuracy": 0.8119805060164149,
+      "weight_norm": 16.470617403361587,
+      "dp_epsilon": 74.22404047319577
+    },
+    {
+      "round": 74,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 199,
+      "selected_client_ids": [
+        4,
+        5
+      ],
+      "trained_client_ids": [
+        4,
+        5
+      ],
+      "model_accuracy": 0.850066443375638,
+      "weight_norm": 16.63719259845894,
+      "dp_epsilon": 75.02404047319575
+    },
+    {
+      "round": 75,
+      "active_clients": 10,
+      "selected_count": 1,
+      "trained_count": 1,
+      "total_samples": 51,
+      "selected_client_ids": [
+        3
+      ],
+      "trained_client_ids": [
+        3
+      ],
+      "model_accuracy": 0.7715368016957823,
+      "weight_norm": 16.827332820825166,
+      "dp_epsilon": 75.82404047319577
+    },
+    {
+      "round": 76,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 181,
+      "selected_client_ids": [
+        3,
+        7
+      ],
+      "trained_client_ids": [
+        3,
+        7
+      ],
+      "model_accuracy": 0.8136824531055574,
+      "weight_norm": 16.90470579632515,
+      "dp_epsilon": 76.61630842505602
+    },
+    {
+      "round": 77,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 467,
+      "selected_client_ids": [
+        1,
+        2,
+        4,
+        5,
+        8
+      ],
+      "trained_client_ids": [
+        1,
+        2,
+        4,
+        5,
+        8
+      ],
+      "model_accuracy": 0.8451886495858355,
+      "weight_norm": 16.955599921690048,
+      "dp_epsilon": 77.36630842505602
+    },
+    {
+      "round": 78,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 400,
+      "selected_client_ids": [
+        2,
+        3,
+        9,
+        10
+      ],
+      "trained_client_ids": [
+        2,
+        3,
+        9,
+        10
+      ],
+      "model_accuracy": 0.8249956388586055,
+      "weight_norm": 17.248241728937348,
+      "dp_epsilon": 78.11630842505602
+    },
+    {
+      "round": 79,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 532,
+      "selected_client_ids": [
+        2,
+        4,
+        7,
+        10
+      ],
+      "trained_client_ids": [
+        2,
+        4,
+        7,
+        10
+      ],
+      "model_accuracy": 0.8390395195094702,
+      "weight_norm": 17.414494710682696,
+      "dp_epsilon": 78.86630842505602
+    },
+    {
+      "round": 80,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 399,
+      "selected_client_ids": [
+        1,
+        7,
+        10
+      ],
+      "trained_client_ids": [
+        1,
+        7,
+        10
+      ],
+      "model_accuracy": 0.8242652058301925,
+      "weight_norm": 17.38807415298312,
+      "dp_epsilon": 79.61630842505602
+    },
+    {
+      "round": 81,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 303,
+      "selected_client_ids": [
+        3,
+        5,
+        10
+      ],
+      "trained_client_ids": [
+        3,
+        5,
+        10
+      ],
+      "model_accuracy": 0.8166634290609196,
+      "weight_norm": 17.454919341867992,
+      "dp_epsilon": 80.36630842505602
+    },
+    {
+      "round": 82,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 390,
+      "selected_client_ids": [
+        4,
+        5,
+        10
+      ],
+      "trained_client_ids": [
+        4,
+        5,
+        10
+      ],
+      "model_accuracy": 0.8445261196553788,
+      "weight_norm": 17.60666475641219,
+      "dp_epsilon": 81.11630842505602
+    },
+    {
+      "round": 83,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 303,
+      "selected_client_ids": [
+        2,
+        3,
+        5,
+        6
+      ],
+      "trained_client_ids": [
+        2,
+        3,
+        5,
+        6
+      ],
+      "model_accuracy": 0.8164846531784645,
+      "weight_norm": 17.696123926057286,
+      "dp_epsilon": 81.86630842505602
+    },
+    {
+      "round": 84,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 158,
+      "selected_client_ids": [
+        2,
+        9
+      ],
+      "trained_client_ids": [
+        2,
+        9
+      ],
+      "model_accuracy": 0.797216783387847,
+      "weight_norm": 17.8059002823937,
+      "dp_epsilon": 82.61630842505602
+    },
+    {
+      "round": 85,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 445,
+      "selected_client_ids": [
+        1,
+        3,
+        4,
+        5,
+        8
+      ],
+      "trained_client_ids": [
+        1,
+        3,
+        4,
+        5,
+        8
+      ],
+      "model_accuracy": 0.8370083599301421,
+      "weight_norm": 17.991763478966188,
+      "dp_epsilon": 83.36630842505602
+    },
+    {
+      "round": 86,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 444,
+      "selected_client_ids": [
+        3,
+        5,
+        7,
+        8,
+        9
+      ],
+      "trained_client_ids": [
+        3,
+        5,
+        7,
+        8,
+        9
+      ],
+      "model_accuracy": 0.8525346372713347,
+      "weight_norm": 18.132863926178267,
+      "dp_epsilon": 84.11630842505602
+    },
+    {
+      "round": 87,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 326,
+      "selected_client_ids": [
+        2,
+        3,
+        8,
+        9
+      ],
+      "trained_client_ids": [
+        2,
+        3,
+        8,
+        9
+      ],
+      "model_accuracy": 0.8148658525195033,
+      "weight_norm": 18.231839439978394,
+      "dp_epsilon": 84.86630842505602
+    },
+    {
+      "round": 88,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 202,
+      "selected_client_ids": [
+        1,
+        2,
+        3
+      ],
+      "trained_client_ids": [
+        1,
+        2,
+        3
+      ],
+      "model_accuracy": 0.7928713504998398,
+      "weight_norm": 18.32565388937483,
+      "dp_epsilon": 85.61630842505602
+    },
+    {
+      "round": 89,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 400,
+      "selected_client_ids": [
+        2,
+        3,
+        9,
+        10
+      ],
+      "trained_client_ids": [
+        2,
+        3,
+        9,
+        10
+      ],
+      "model_accuracy": 0.8097520963787637,
+      "weight_norm": 18.47843856227002,
+      "dp_epsilon": 86.36630842505602
+    },
+    {
+      "round": 90,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 470,
+      "selected_client_ids": [
+        1,
+        2,
+        3,
+        4,
+        7
+      ],
+      "trained_client_ids": [
+        1,
+        2,
+        3,
+        4,
+        7
+      ],
+      "model_accuracy": 0.8429526807765323,
+      "weight_norm": 18.53810051893652,
+      "dp_epsilon": 87.11630842505602
+    },
+    {
+      "round": 91,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 327,
+      "selected_client_ids": [
+        3,
+        9,
+        10
+      ],
+      "trained_client_ids": [
+        3,
+        9,
+        10
+      ],
+      "model_accuracy": 0.805333929590887,
+      "weight_norm": 18.55506283475087,
+      "dp_epsilon": 87.86630842505602
+    },
+    {
+      "round": 92,
+      "active_clients": 10,
+      "selected_count": 1,
+      "trained_count": 1,
+      "total_samples": 138,
+      "selected_client_ids": [
+        4
+      ],
+      "trained_client_ids": [
+        4
+      ],
+      "model_accuracy": 0.8339364283046139,
+      "weight_norm": 18.657388471969682,
+      "dp_epsilon": 88.61630842505602
+    },
+    {
+      "round": 93,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 178,
+      "selected_client_ids": [
+        5,
+        8
+      ],
+      "trained_client_ids": [
+        5,
+        8
+      ],
+      "model_accuracy": 0.827920644767586,
+      "weight_norm": 18.679061568194843,
+      "dp_epsilon": 89.36630842505602
+    },
+    {
+      "round": 94,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 413,
+      "selected_client_ids": [
+        2,
+        4,
+        8,
+        9
+      ],
+      "trained_client_ids": [
+        2,
+        4,
+        8,
+        9
+      ],
+      "model_accuracy": 0.8318911809863898,
+      "weight_norm": 18.67844679849731,
+      "dp_epsilon": 90.11630842505602
+    },
+    {
+      "round": 95,
+      "active_clients": 10,
+      "selected_count": 2,
+      "trained_count": 2,
+      "total_samples": 168,
+      "selected_client_ids": [
+        3,
+        8
+      ],
+      "trained_client_ids": [
+        3,
+        8
+      ],
+      "model_accuracy": 0.799212787410247,
+      "weight_norm": 18.794338020123472,
+      "dp_epsilon": 90.86630842505602
+    },
+    {
+      "round": 96,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 455,
+      "selected_client_ids": [
+        5,
+        6,
+        9,
+        10
+      ],
+      "trained_client_ids": [
+        5,
+        6,
+        9,
+        10
+      ],
+      "model_accuracy": 0.8317857012360947,
+      "weight_norm": 18.811220054807347,
+      "dp_epsilon": 91.61630842505602
+    },
+    {
+      "round": 97,
+      "active_clients": 10,
+      "selected_count": 5,
+      "trained_count": 5,
+      "total_samples": 543,
+      "selected_client_ids": [
+        2,
+        4,
+        7,
+        8,
+        9
+      ],
+      "trained_client_ids": [
+        2,
+        4,
+        7,
+        8,
+        9
+      ],
+      "model_accuracy": 0.8431880517717601,
+      "weight_norm": 18.88695742812301,
+      "dp_epsilon": 92.36630842505602
+    },
+    {
+      "round": 98,
+      "active_clients": 10,
+      "selected_count": 3,
+      "trained_count": 3,
+      "total_samples": 288,
+      "selected_client_ids": [
+        2,
+        7,
+        9
+      ],
+      "trained_client_ids": [
+        2,
+        7,
+        9
+      ],
+      "model_accuracy": 0.8174695120034173,
+      "weight_norm": 18.936055432121552,
+      "dp_epsilon": 93.11630842505602
+    },
+    {
+      "round": 99,
+      "active_clients": 10,
+      "selected_count": 1,
+      "trained_count": 1,
+      "total_samples": 117,
+      "selected_client_ids": [
+        8
+      ],
+      "trained_client_ids": [
+        8
+      ],
+      "model_accuracy": 0.8114727196983232,
+      "weight_norm": 18.989405672270284,
+      "dp_epsilon": 93.86630842505602
+    },
+    {
+      "round": 100,
+      "active_clients": 10,
+      "selected_count": 4,
+      "trained_count": 4,
+      "total_samples": 517,
+      "selected_client_ids": [
+        1,
+        6,
+        7,
+        10
+      ],
+      "trained_client_ids": [
+        1,
+        6,
+        7,
+        10
+      ],
+      "model_accuracy": 0.8249338113581608,
+      "weight_norm": 19.035943277334464,
+      "dp_epsilon": 94.61630842505602
+    }
+  ],
+  "final_clients": [
+    {
+      "client_id": 1,
+      "battery_level": 100,
+      "engagement": 0.65,
+      "participation_streak": 0,
+      "total_participations": 25,
+      "fatigue": 0.0,
+      "local_model_accuracy": 0.7395309784684773
+    },
+    {
+      "client_id": 2,
+      "battery_level": 61,
+      "engagement": 0.67,
+      "participation_streak": 0,
+      "total_participations": 34,
+      "fatigue": 0.04000000000000001,
+      "local_model_accuracy": 0.7043757654903592
+    },
+    {
+      "client_id": 3,
+      "battery_level": 58,
+      "engagement": 0.63,
+      "participation_streak": 0,
+      "total_participations": 32,
+      "fatigue": 0.0,
+      "local_model_accuracy": 0.7021224053282988
+    },
+    {
+      "client_id": 4,
+      "battery_level": 21,
+      "engagement": 0.78,
+      "participation_streak": 0,
+      "total_participations": 41,
+      "fatigue": 0.0,
+      "local_model_accuracy": 0.9312142290943974
+    },
+    {
+      "client_id": 5,
+      "battery_level": 36,
+      "engagement": 0.62,
+      "participation_streak": 0,
+      "total_participations": 38,
+      "fatigue": 0.0,
+      "local_model_accuracy": 0.8566603914335299
+    },
+    {
+      "client_id": 6,
+      "battery_level": 100,
+      "engagement": 0.59,
+      "participation_streak": 0,
+      "total_participations": 26,
+      "fatigue": 0.0,
+      "local_model_accuracy": 0.8288256587413659
+    },
+    {
+      "client_id": 7,
+      "battery_level": 90,
+      "engagement": 0.7,
+      "participation_streak": 0,
+      "total_participations": 30,
+      "fatigue": 0.04000000000000001,
+      "local_model_accuracy": 0.889302020197391
+    },
+    {
+      "client_id": 8,
+      "battery_level": 14,
+      "engagement": 0.64,
+      "participation_streak": 1,
+      "total_participations": 40,
+      "fatigue": 0.16000000000000003,
+      "local_model_accuracy": 0.8152410194420161
+    },
+    {
+      "client_id": 9,
+      "battery_level": 41,
+      "engagement": 0.63,
+      "participation_streak": 0,
+      "total_participations": 37,
+      "fatigue": 0.12,
+      "local_model_accuracy": 0.7679335022302817
+    },
+    {
+      "client_id": 10,
+      "battery_level": 94,
+      "engagement": 0.66,
+      "participation_streak": 0,
+      "total_participations": 26,
+      "fatigue": 0.0,
+      "local_model_accuracy": 0.8669638226474844
+    }
+  ],
+  "final_model_accuracy": 0.8249338113581608,
+  "dp": {
+    "enabled": true,
+    "clip_norm": 0.25,
+    "noise_multiplier": 1.0,
+    "delta": 1e-05,
+    "releases": 98,
+    "clipped_updates": 245,
+    "total_updates": 333,
+    "epsilon": 94.61630842505602
+  }
+}

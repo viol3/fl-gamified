@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+import json
 import random
 from typing import Optional
 
@@ -41,6 +42,7 @@ class Client:
         self,
         reward_points: int = 0,
         rng: Optional[random.Random] = None,
+        reward_bonus_cap: float = 0.25,
     ) -> tuple[bool, dict[str, float | str]]:
         if rng is None:
             rng = random.Random()
@@ -66,7 +68,7 @@ class Client:
             }
 
         fatigue_penalty = min(0.05 * self.participation_streak + 0.5 * self.fatigue, 0.35)
-        reward_bonus = min(reward_points / 100.0, 0.25)
+        reward_bonus = min(reward_points / 100.0, reward_bonus_cap)
 
         score = self._base_participation_score() - fatigue_penalty + reward_bonus
         score = max(0.0, min(score, 0.98))
@@ -182,6 +184,35 @@ def create_random_client(client_id: int, rng: Optional[random.Random] = None) ->
 def build_random_clients(count: int = 10, seed: int | None = None) -> list[Client]:
     rng = random.Random(seed) if seed is not None else random.SystemRandom()
     return [create_random_client(client_id=index + 1, rng=rng) for index in range(count)]
+
+
+def client_from_dict(data: dict) -> Client:
+    """Reconstruct a fresh Client (pristine round-0 state) from a to_dict() snapshot."""
+    return Client(
+        client_id=data["client_id"],
+        local_samples=data["local_samples"],
+        digit_focus=data["digit_focus"],
+        cpu_power=data["cpu_power"],
+        data_quality=data["data_quality"],
+        storage_capacity_gb=data["storage_capacity_gb"],
+        battery_level=data["battery_level"],
+        connectivity=data["connectivity"],
+        engagement=data["engagement"],
+        local_epochs=data.get("local_epochs", 1),
+        label_histogram={int(digit): count for digit, count in data.get("label_histogram", {}).items()},
+        participation_streak=data.get("participation_streak", 0),
+        total_participations=data.get("total_participations", 0),
+        previous_round_participated=data.get("previous_round_participated", False),
+        fatigue=data.get("fatigue", 0.0),
+        local_model_accuracy=data.get("local_model_accuracy", 0.5),
+    )
+
+
+def load_clients_from_json(path: str) -> list[Client]:
+    """Load a fixed client roster (e.g. initial_clients.json) as fresh Client instances."""
+    with open(path, "r", encoding="utf-8") as handle:
+        data = json.load(handle)
+    return [client_from_dict(entry) for entry in data]
 
 
 def build_demo_clients() -> list[Client]:
