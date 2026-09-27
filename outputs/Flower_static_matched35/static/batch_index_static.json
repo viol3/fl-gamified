@@ -1,0 +1,120 @@
+{
+  "mode": 1,
+  "mode_tag": "static",
+  "runs": 10,
+  "rounds": 100,
+  "selection_rate": 0.6,
+  "roster_path": "outputs/initial_clients.json",
+  "dp": {
+    "enabled": true,
+    "clip_norm": 0.25,
+    "noise_multiplier": 1.0,
+    "delta": 1e-05
+  },
+  "decision_seeds": [
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110
+  ],
+  "results": [
+    {
+      "run": 1,
+      "seed": 101,
+      "mode": 1,
+      "final_accuracy": 0.8249494139341729,
+      "total_selected": 371,
+      "dp_epsilon": 96.11630842505602,
+      "path": "outputs/Flower_static_matched35\\static\\flower_comparison_summary_static_run01_seed101.json"
+    },
+    {
+      "run": 2,
+      "seed": 102,
+      "mode": 1,
+      "final_accuracy": 0.8244622776852554,
+      "total_selected": 382,
+      "dp_epsilon": 95.36630842505602,
+      "path": "outputs/Flower_static_matched35\\static\\flower_comparison_summary_static_run02_seed102.json"
+    },
+    {
+      "run": 3,
+      "seed": 103,
+      "mode": 1,
+      "final_accuracy": 0.8319995586249714,
+      "total_selected": 376,
+      "dp_epsilon": 95.36630842505602,
+      "path": "outputs/Flower_static_matched35\\static\\flower_comparison_summary_static_run03_seed103.json"
+    },
+    {
+      "run": 4,
+      "seed": 104,
+      "mode": 1,
+      "final_accuracy": 0.8300837991888222,
+      "total_selected": 375,
+      "dp_epsilon": 95.36630842505602,
+      "path": "outputs/Flower_static_matched35\\static\\flower_comparison_summary_static_run04_seed104.json"
+    },
+    {
+      "run": 5,
+      "seed": 105,
+      "mode": 1,
+      "final_accuracy": 0.8305959212960564,
+      "total_selected": 378,
+      "dp_epsilon": 94.61630842505602,
+      "path": "outputs/Flower_static_matched35\\static\\flower_comparison_summary_static_run05_seed105.json"
+    },
+    {
+      "run": 6,
+      "seed": 106,
+      "mode": 1,
+      "final_accuracy": 0.79527121321216,
+      "total_selected": 362,
+      "dp_epsilon": 94.61630842505602,
+      "path": "outputs/Flower_static_matched35\\static\\flower_comparison_summary_static_run06_seed106.json"
+    },
+    {
+      "run": 7,
+      "seed": 107,
+      "mode": 1,
+      "final_accuracy": 0.8400032000595941,
+      "total_selected": 383,
+      "dp_epsilon": 96.11630842505602,
+      "path": "outputs/Flower_static_matched35\\static\\flower_comparison_summary_static_run07_seed107.json"
+    },
+    {
+      "run": 8,
+      "seed": 108,
+      "mode": 1,
+      "final_accuracy": 0.7660284401656207,
+      "total_selected": 381,
+      "dp_epsilon": 94.61630842505602,
+      "path": "outputs/Flower_static_matched35\\static\\flower_comparison_summary_static_run08_seed108.json"
+    },
+    {
+      "run": 9,
+      "seed": 109,
+      "mode": 1,
+      "final_accuracy": 0.8175498427753742,
+      "total_selected": 377,
+      "dp_epsilon": 95.36630842505602,
+      "path": "outputs/Flower_static_matched35\\static\\flower_comparison_summary_static_run09_seed109.json"
+    },
+    {
+      "run": 10,
+      "seed": 110,
+      "mode": 1,
+      "final_accuracy": 0.8348181078470662,
+      "total_selected": 365,
+      "dp_epsilon": 93.86630842505602,
+      "path": "outputs/Flower_static_matched35\\static\\flower_comparison_summary_static_run10_seed110.json"
+    }
+  ],
+  "final_accuracy_mean": 0.8195761774789094,
+  "final_accuracy_std": 0.02133238874738685
+}

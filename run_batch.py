@@ -21,8 +21,8 @@ from src.fl_gamified.config import SimulationConfig
 MODE_TAGS = {0: "standart", 1: "static", 2: "dynamic"}
 
 
-def run_single(mode: int, seed: int, run_index: int, rounds: int, selection_rate: float, out_dir: str, roster_path: str, dp_overrides: dict) -> dict:
-    config = SimulationConfig(seed=seed, rounds=rounds, mode=mode, **dp_overrides)
+def run_single(mode: int, seed: int, run_index: int, rounds: int, selection_rate: float, out_dir: str, roster_path: str, config_overrides: dict) -> dict:
+    config = SimulationConfig(seed=seed, rounds=rounds, mode=mode, **config_overrides)
     server = Server(config=config)
     server.initialize_model(input_dim=config.input_dim, num_classes=config.num_classes)
 
@@ -60,16 +60,19 @@ def main() -> None:
     parser.add_argument("--dp", action=argparse.BooleanOptionalAction, default=None, help="Enable/disable DP-FedAvg (default: config.py)")
     parser.add_argument("--dp-noise", type=float, default=None, help="DP noise multiplier (sigma)")
     parser.add_argument("--dp-clip", type=float, default=None, help="DP L2 clipping norm (C)")
+    parser.add_argument("--static-reward", type=int, default=None, help="Mode 1 fixed reward points (default: config.py static_reward_points)")
     args = parser.parse_args()
 
-    dp_overrides = {}
+    config_overrides = {}
     if args.dp is not None:
-        dp_overrides["dp_enabled"] = args.dp
+        config_overrides["dp_enabled"] = args.dp
     if args.dp_noise is not None:
-        dp_overrides["dp_noise_multiplier"] = args.dp_noise
+        config_overrides["dp_noise_multiplier"] = args.dp_noise
     if args.dp_clip is not None:
-        dp_overrides["dp_clip_norm"] = args.dp_clip
-    dp_config = SimulationConfig(**dp_overrides)
+        config_overrides["dp_clip_norm"] = args.dp_clip
+    if args.static_reward is not None:
+        config_overrides["static_reward_points"] = args.static_reward
+    dp_config = SimulationConfig(**config_overrides)
 
     if not os.path.exists(args.roster):
         raise SystemExit(f"Roster file not found: {args.roster}. Generate a fixed roster first.")
@@ -81,6 +84,7 @@ def main() -> None:
     print(f"Running {args.runs} trials | mode={args.mode} ({MODE_TAGS[args.mode]}) | rounds={args.rounds} | roster={args.roster}")
     print(f"Decision-RNG seeds: {args.seed_start}..{args.seed_start + args.runs - 1} (client roster fixed across all runs)")
     print(f"Output dir: {mode_out_dir}")
+    print(f"Static reward points: {dp_config.static_reward_points} (used only in mode 1)")
     print(f"DP: enabled={dp_config.dp_enabled} | clip={dp_config.dp_clip_norm} | sigma={dp_config.dp_noise_multiplier} | delta={dp_config.dp_delta}")
     print("-" * 90)
     for i in range(1, args.runs + 1):
@@ -93,7 +97,7 @@ def main() -> None:
             selection_rate=args.selection_rate,
             out_dir=mode_out_dir,
             roster_path=args.roster,
-            dp_overrides=dp_overrides,
+            config_overrides=config_overrides,
         )
         results.append(result)
         print(f"Run {i:2d} | seed={seed:4d} | final_accuracy={result['final_accuracy']:.4f} | selected_total={result['total_selected']:4d} | eps={result['dp_epsilon']:.2f} | {result['path']}")
