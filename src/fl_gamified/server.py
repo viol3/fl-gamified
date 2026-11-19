@@ -12,10 +12,10 @@ from .privacy import DP_SEED_OFFSET, clip_delta, compute_epsilon
 
 @dataclass
 class Server:
-    """Federated Learning sunucusu - global modeli ve client'ları yönetir."""
+    """Federated learning server: manages the global model and the clients."""
     
     all_clients: list[Client] = field(default_factory=list)
-    active_clients: list[Client] = field(default_factory=list)  # Bu roundda aktif clientlar
+    active_clients: list[Client] = field(default_factory=list)  # clients active in this round
     config: SimulationConfig = field(default_factory=SimulationConfig)
     model_weights: dict = field(default_factory=dict)
     selected_clients: list[Client] = field(default_factory=list)
@@ -59,18 +59,18 @@ class Server:
         }
     
     def initialize_model(self, input_dim: int = 64, num_classes: int = 10):
-        """Model ağırlıklarını initialize et (sklearn LogisticRegression için)."""
+        """Initialise the model weights (in the shape of an sklearn LogisticRegression)."""
         self.model_weights = {
             'coef': np.random.randn(num_classes, input_dim) * 0.01,
             'intercept': np.zeros(num_classes),
         }
-        print(f"✓ Model initialized | coef shape: {self.model_weights['coef'].shape}")
+        print(f"Model initialized | coef shape: {self.model_weights['coef'].shape}")
 
     def register_clients(self, clients: list[Client]):
-        """Tüm client'ları server'a kaydet. İlk round'da hepsi aktif olur."""
+        """Register all clients with the server. All of them are active in the first round."""
         self.all_clients.extend(clients)
         self.active_clients.extend(clients)
-        print(f"✓ Registered {len(clients)} new clients | Total: {len(self.all_clients)} | Active: {len(self.active_clients)}")
+        print(f"Registered {len(clients)} new clients | Total: {len(self.all_clients)} | Active: {len(self.active_clients)}")
         if self.logger:
             self.logger.log_event("initial_client_roster", {
                 "round": self.round_number,
@@ -83,7 +83,7 @@ class Server:
                 })
     
     def add_clients(self, new_clients: list[Client]):
-        """Yeni clientları mid-simulation'da ekle (örn. Round 3'de)."""
+        """Add new clients during the simulation (for example in round 3)."""
         for client in new_clients:
             if client not in self.all_clients:
                 self.all_clients.append(client)
@@ -96,7 +96,7 @@ class Server:
                     })
     
     def remove_clients(self, client_ids: list[int]):
-        """Belirli clientları aktif listeden kaldır (ayrılış, disconnect, vb.)."""
+        """Remove the given clients from the active list (dropout, disconnect, etc.)."""
         for client_id in client_ids:
             self.active_clients = [c for c in self.active_clients if c.client_id != client_id]
             print(f"  - Removed Client {client_id} from active list")
@@ -104,7 +104,7 @@ class Server:
                 self.logger.log_event("client_left", {"round": self.round_number, "client_id": client_id})
     
     def get_active_clients_summary(self) -> str:
-        """Aktif clientların durumunu özet olarak göster."""
+        """Return a short summary of the active clients."""
         if not self.active_clients:
             return "No active clients"
         
@@ -115,12 +115,11 @@ class Server:
 
     def select_clients(self, selection_rate: float = 0.6) -> list[Client]:
         """
-        Client seçimi - tüm active clientlara reward teklif et, 
-        onların katılım kararını sor.
-        
-        - Bağlantı: 'weak' olanlar %50 ihtimalle, diğerleri %100
-        - Batarya: %50 altındaysa %30 ihtimalle
-        - Reward: Temel reward + katılımcı özellikleri
+        Client selection: offer a reward to every eligible active client and
+        ask for its participation decision.
+
+        - Eligibility depends on connectivity and battery level (see config.py).
+        - The reward offer depends on the scenario mode (see _compute_reward_offer).
         """
         self.selected_clients = []
         self.last_selection_details = []
@@ -128,7 +127,7 @@ class Server:
         selection_rate = max(0.0, min(selection_rate, 1.0))
         
         for client in self.active_clients:
-            # Temel uygunluk kontrolü
+            # Basic eligibility check
             connection_ok = True
             if client.connectivity == "weak":
                 if self.rng.random() < self.config.weak_connection_skip_prob:
@@ -177,7 +176,7 @@ class Server:
             else:
                 reward_offer = self._compute_reward_offer(client)
 
-                # Client'a katılma kararı soralım
+                # Ask the client whether it will participate
                 participates, details = client.decide_participation(
                     reward_points=reward_offer,
                     rng=self.rng,
@@ -215,12 +214,12 @@ class Server:
     
     def _compute_reward_offer(self, client: Client) -> int:
         """
-        Client'a teklif etmek için reward miktarını hesapla (bkz. config.py).
+        Compute the reward offered to a client (see config.py).
 
-        - Mode 1: sabit ödül (static_reward_points, max_reward'a kırpılır)
-        - Mode 2: base_reward_offset + round number + katılımcı özellikleri
+        - Mode 1: fixed reward (static_reward_points, capped at max_reward)
+        - Mode 2: base_reward_offset + round number + client-specific bonuses
           (engagement_bonus, weak_connectivity_bonus, previous_participation_bonus),
-          max_reward'a kırpılır
+          capped at max_reward
         """
         if self.config.mode == 1:
             return min(self.config.static_reward_points, self.config.max_reward)
@@ -236,21 +235,21 @@ class Server:
 
     def aggregate_weights(self, client_updates: list[dict], client_sample_counts: list[int]) -> dict:
         """
-        Federated Averaging (FedAvg) - ağırlıklı ortalamayla birleştir.
+        Federated Averaging (FedAvg): combine the updates with a weighted average.
         
         Args:
-            client_updates: Her client'ın güncellenen ağırlıkları
-            client_sample_counts: Her client'ın örnek sayısı (ağırlıklandırma için)
+            client_updates: updated weights of each client
+            client_sample_counts: number of samples of each client (used as weights)
         """
         total_samples = sum(client_sample_counts)
         
-        # Ağırlıkları sıfırla
+        # Start from zero weights
         aggregated_weights = {
             'coef': np.zeros_like(self.model_weights['coef']),
             'intercept': np.zeros_like(self.model_weights['intercept']),
         }
         
-        # Ağırlıklı ortalamayla birleştir
+        # Weighted average
         for client_update, sample_count in zip(client_updates, client_sample_counts):
             weight = sample_count / total_samples
             aggregated_weights['coef'] += weight * client_update['coef']
@@ -260,11 +259,11 @@ class Server:
 
     def aggregate_weights_dp(self, client_updates: list[dict], client_sample_counts: list[int]) -> dict:
         """
-        DP-FedAvg (McMahan et al. 2018) - kırpılmış farkların gürültülü, ağırlıklı ortalaması.
+        DP-FedAvg (McMahan et al. 2018): noisy weighted average of the clipped updates.
 
-        Ağırlıklar w_k = min(n_k / n_max, 1) ile sınırlandığı için tek bir client'ın toplam
-        üzerindeki etkisi (duyarlılık) en fazla dp_clip_norm olur. Payda, seçilen client'lara
-        bağlı olmayan sabit bir değerdir: selection_rate * sum(w_k, tüm client'lar).
+        The weights are bounded by w_k = min(n_k / n_max, 1), so a single client can change
+        the sum by at most dp_clip_norm (sensitivity). The denominator is a constant that does
+        not depend on which clients were selected: selection_rate * sum(w_k over all clients).
         """
         clip_norm = self.config.dp_clip_norm
         max_samples = max(c.local_samples for c in self.all_clients)
@@ -304,7 +303,7 @@ class Server:
         return compute_epsilon(self.config.dp_noise_multiplier, self.dp_releases, self.config.dp_delta)
 
     def update_model(self, aggregated_weights: dict, learning_rate: float = 1.0):
-        """Global modeli yeni ağırlıklarla güncelle."""
+        """Update the global model with the new weights."""
         self.model_weights['coef'] = aggregated_weights['coef'] * learning_rate + \
                                       self.model_weights['coef'] * (1 - learning_rate)
         self.model_weights['intercept'] = aggregated_weights['intercept'] * learning_rate + \
@@ -370,7 +369,7 @@ class Server:
         self.last_model_accuracy = max(self.config.min_accuracy, min(self.last_model_accuracy, self.config.max_accuracy))
 
     def simulate_round(self, selection_rate: float = 0.6) -> dict:
-        """Tek bir FL round'ını simulate et."""
+        """Simulate a single FL round."""
         self.round_number += 1
         if self.logger:
             self.logger.log_event("round_start", {
@@ -379,24 +378,24 @@ class Server:
                 "active_count": len(self.active_clients),
             })
         
-        # Önceki roundtan katılanları apply_round_outcome ile güncelle
+        # Update the clients that took part in the previous round
         for client in self.selected_clients:
             client.apply_round_outcome(participated=True)
         
-        # Katılmayan active clientları güncelle
+        # Update the active clients that did not take part
         for client in self.active_clients:
             if client not in self.selected_clients:
                 client.apply_round_outcome(participated=False)
         
-        # Bu roundda katılacak clientları seç
+        # Select the clients for this round
         selected = self.select_clients(selection_rate or self.config.selection_rate)
         
-        # Dummy: Her client lokal güncellemeler yapıyor
+        # Simulated local training: each selected client produces an update
         client_updates = []
         sample_counts = []
         
         for client in selected:
-            # Basit simülasyon: her client ağırlıklara küçük noise ekliyor
+            # Simple simulation: each client adds small noise to the weights
             local_update = {
                 'coef': self.model_weights['coef'] + np.random.randn(*self.model_weights['coef'].shape) * 0.01,
                 'intercept': self.model_weights['intercept'] + np.random.randn(*self.model_weights['intercept'].shape) * 0.01,
@@ -420,7 +419,7 @@ class Server:
                     "intercept_std": intercept_std,
                 })
         
-        # Aggregasyon
+        # Aggregation
         if client_updates:
             if self.config.dp_enabled:
                 aggregated = self.aggregate_weights_dp(client_updates, sample_counts)
@@ -444,7 +443,7 @@ class Server:
                     "agg_intercept_std": agg_intercept_std,
                 })
         
-        # History'e kaydet
+        # Save to history
         round_info = {
             'round': self.round_number,
             'active_clients': len(self.active_clients),
@@ -500,7 +499,7 @@ class Server:
         return path
 
     def describe(self) -> str:
-        """Server durumunu açıkla."""
+        """Describe the server state."""
         return (
             f"Server Round {self.round_number} | "
             f"total_clients: {len(self.all_clients)} | "

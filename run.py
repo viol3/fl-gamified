@@ -22,11 +22,11 @@ def main() -> None:
         1: "Static Incentive FL",
         2: "Dynamic Gamified FL",
     }
-    # Matches Unity's OnReportButtonClick mode naming (standart/static/dynamic)
-    mode_file_tag = "standart" if scenario_mode == 0 else "static" if scenario_mode == 1 else "dynamic"
+    # Mode tags used in output folder and file names (standard/static/dynamic)
+    mode_file_tag = "standard" if scenario_mode == 0 else "static" if scenario_mode == 1 else "dynamic"
     run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    # Server'ı initialize et
+    # Initialise the server
     config = SimulationConfig(seed=42, rounds=100, mode=scenario_mode)
     logger = EventLogger(path="outputs/simulation_events.jsonl", mode="w")
     server = Server(config=config, logger=logger)
@@ -34,7 +34,7 @@ def main() -> None:
     print()
     print(f"Active mode: {config.mode} ({mode_labels.get(config.mode, 'Unknown')})")
 
-    # İlk 10 rastgele client'i register et
+    # Register 10 random clients
     initial_clients = build_random_clients(count=10)
     server.register_clients(initial_clients)
     print("\n--- Initial Clients ---")
@@ -46,32 +46,32 @@ def main() -> None:
         json.dump([client.to_dict() for client in initial_clients], handle, ensure_ascii=False, indent=2)
     print(f"\nInitial client config saved to: {initial_clients_path}")
 
-    # 100 round simülasyonu
+    # Simulate 100 rounds
     print("\n" + "=" * 90)
     print("Simulation: 100 Federated Learning Rounds")
     print("=" * 90)
 
     for round_num in range(1, config.rounds + 1):
-        print(f"\n{'─' * 90}")
+        print(f"\n{'-' * 90}")
         print(f"ROUND {round_num}")
-        print(f"{'─' * 90}")
+        print(f"{'-' * 90}")
 
-        # State bilgisi göster
+        # Show the current state
         print(f"\nServer: {server.describe()}")
         print(f"Status: {server.get_active_clients_summary()}")
 
-        # Round'ı simüle et
+        # Simulate the round
         print("\n--- Client Participation Decisions ---")
         round_result = server.simulate_round(selection_rate=0.6)
 
-        # Seçilen clientları göster
-        print(f"\n✓ Round {round_num} Aggregation:")
+        # Show the selected clients
+        print(f"\nRound {round_num} Aggregation:")
         print(f"  - Active Clients: {round_result['active_clients']}")
         print(f"  - Selected for training: {round_result['selected_count']}")
         print(f"  - Selected Client IDs: {round_result['selected_client_ids']}")
         print(f"  - Total samples aggregated: {round_result['total_samples']}")
 
-        # Seçilen clientların detaylarını göster
+        # Show details of the selected clients
         print("\n  Details:")
         for client in server.selected_clients:
             reward = server._compute_reward_offer(client)
@@ -138,7 +138,7 @@ def main() -> None:
     print(f"\nComparison summary saved to: {summary_path}")
 
     print("\n" + "=" * 90)
-    print(f"Simulation Complete ✓")
+    print(f"Simulation Complete ")
     print("=" * 90)
 
 

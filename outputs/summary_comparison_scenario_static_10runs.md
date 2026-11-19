@@ -1,12 +1,12 @@
-# Scenario 1 — Statik Teşvik — Flower vs Unity (10 paired runs, fixed roster)
+# Scenario 1 - Static Incentive - Flower vs Unity (10 paired runs, fixed roster)
 
-## 0. Client Roster Profili
+## 0. Client Roster Profile
 
-Sabit roster: 10 client, toplam 1042 sample (ort. 104.2/client).
+Fixed roster: 10 clients, 1042 samples in total (mean 104.2 per client).
 
-### Özellik Dağılımı
+### Attribute Distribution
 
-| Özellik | Min | Max | Ortalama | Std | Varyasyon Katsayısı (CV) |
+| Attribute | Min | Max | Mean | Std | Coefficient of Variation (CV) |
 |---|---|---|---|---|---|
 | Engagement | 0.59 | 0.78 | 0.657 | 0.050 | 0.076 |
 | Battery Level | 60 | 91 | 77.100 | 11.631 | 0.151 |
@@ -16,22 +16,22 @@ Sabit roster: 10 client, toplam 1042 sample (ort. 104.2/client).
 | Local Samples | 51 | 191 | 104.200 | 40.524 | 0.389 |
 | Local Epochs | 1 | 4 | 2.800 | 1.077 | 0.385 |
 
-**Ön plana çıkan özellik:** CV (std/mean) bazında en fazla farklılaşan özellik **Storage (GB)** (CV=0.470) — client'lar arasında en çok bu boyutta ayrışıyorlar. En homojen özellik ise **Engagement** (CV=0.076) — engagement değerleri client'lar arasında görece dar bir bantta (0.59-0.78) toplanmış, yani roster'da 'aşırı motivasyonsuz' ya da 'aşırı motivasyonlu' bir uç client yok.
+**Most varied attribute:** by CV (std/mean), clients differ most in **Storage (GB)** (CV=0.470). The most homogeneous attribute is **Engagement** (CV=0.076): engagement values lie in a fairly narrow band (0.59-0.78), so the roster has no extremely unmotivated or extremely motivated client.
 
-### Connectivity Dağılımı
+### Connectivity Distribution
 
-- strong: 3 client
-- medium: 4 client
-- weak: 3 client
+- strong: 3 clients
+- medium: 4 clients
+- weak: 3 clients
 
-### Veri (Digit) Kapsamı
+### Data (Digit) Coverage
 
-- Roster'ın kapsadığı rakamlar: [0, 1, 2, 3, 4, 6, 7]
-- **Hiç örneği olmayan rakamlar: [5, 8, 9]** — bu roster'da hiçbir client'ın local_samples'ında [5, 8, 9] rakamlarına ait tek bir örnek yok (Dirichlet/non-IID dağılımın rastgele bir sonucu). Bu, hangi senaryo çalışırsa çalışsın (0/1/2 fark etmez) global modelin bu rakamları hiç görmeden eğitileceği anlamına gelir — mevcut accuracy simülasyonu rakam-bazlı değil toplu bir formül kullandığı için sayısal sonucu etkilemiyor, ama gerçek bir sınıflandırma deneyinde bu ciddi bir kapsam boşluğu olarak raporlanmalı.
+- Digits covered by the roster: [0, 1, 2, 3, 4, 6, 7]
+- **Digits with no samples: [5, 8, 9]**. No client in this roster has a single sample of digits [5, 8, 9] in its local data (a random outcome of the Dirichlet/non-IID split). Whatever the scenario (0, 1 or 2), the global model is trained without ever seeing these digits. The current accuracy simulation uses an aggregate formula rather than per-digit accuracy, so the numbers are not affected, but in a real classification experiment this would be a serious coverage gap.
 
-### Senaryo 1 İçin Çıkarım
+### Implications for Scenario 1
 
-Senaryo 1'de `decide_participation()` çağrıldığı için (bkz. `senaryo_modlari.md` Bölüm 4), yukarıdaki özelliklerin tamamı katılım skoruna doğrudan girer: `base_score = 0.45*engagement + 0.25*(battery/100) + 0.15*min(cpu_power/4,1) + 0.15*data_quality`. Ödül sabit olduğu için (`static_reward_points`) tüm client'lara aynı `reward_bonus` eklenir — dolayısıyla client'lar arası katılım farkı artık **yalnızca roster'daki içsel farklılıklardan** kaynaklanır. Buna ek olarak, hem sunucu tarafı uygunluk filtresi (Bölüm 2) hem de istemci içi ikinci kademe kontrol (batarya<20, bağlantı kopma olasılığı: weak=0.35, medium=0.15, strong=0.05) weak/medium connectivity client'ları yapısal olarak dezavantajlı kılar. Senaryo 0'ın aksine burada engagement ve data_quality gibi özelliklerin katılım üzerinde ölçülebilir bir etkisi beklenir.
+In Scenario 1 `decide_participation()` is called (see thesis, Section 3.8.3), so all attributes above enter the participation score directly: `base_score = 0.45*engagement + 0.25*(battery/100) + 0.15*min(cpu_power/4,1) + 0.15*data_quality`. Because the reward is fixed (`static_reward_points`), every client gets the same `reward_bonus`, so differences in participation between clients come **only from the differences within the roster**. In addition, both the server-side eligibility filter (thesis, Section 3.8.1) and the client-side second check (battery<20, disconnection probability: weak=0.35, medium=0.15, strong=0.05) put clients with weak or medium connectivity at a structural disadvantage. Unlike Scenario 0, attributes such as engagement and data_quality are expected to have a measurable effect on participation.
 
 ## Aggregate
 - Pairs compared: 10

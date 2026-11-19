@@ -2,9 +2,9 @@
 personalisation, or just to a larger average reward?
 
 Compares four Flower-side batches on the same fixed roster and seeds:
-standart, static (default reward), static with reward matched to dynamic's mean offer, dynamic.
+standard, static (default reward), static with reward matched to dynamic's mean offer, dynamic.
 Reports total participation, per-connectivity-group participation, recovery rate of each group's
-static-vs-standart loss, and participation inequality across clients.
+static-vs-standard loss, and participation inequality across clients.
 """
 import argparse
 import glob
@@ -44,7 +44,7 @@ def gini(values):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--standart", default="outputs/Flower/standart")
+    parser.add_argument("--standard", default="outputs/Flower/standard")
     parser.add_argument("--static", default="outputs/Flower/static")
     parser.add_argument("--static-matched", default="outputs/Flower_static_matched35/static")
     parser.add_argument("--dynamic", default="outputs/Flower/dynamic")
@@ -54,7 +54,7 @@ def main():
 
     roster = json.load(open(args.roster, encoding="utf-8"))
     batches = {
-        "standart": load_batch(args.standart),
+        "standard": load_batch(args.standard),
         "static": load_batch(args.static),
         "static_matched": load_batch(args.static_matched),
         "dynamic": load_batch(args.dynamic),
@@ -62,10 +62,10 @@ def main():
     static_reward = batches["static"][0]["config"]["static_reward_points"]
     matched_reward = batches["static_matched"][0]["config"]["static_reward_points"]
     labels = {
-        "standart": "Senaryo 0 — Standart",
-        "static": f"Senaryo 1 — Statik ({static_reward} puan)",
-        "static_matched": f"Senaryo 1b — Statik, eşit bütçe ({matched_reward} puan)",
-        "dynamic": "Senaryo 2 — Dinamik (nihai)",
+        "standard": "Scenario 0 - Standard",
+        "static": f"Scenario 1 - Static ({static_reward} points)",
+        "static_matched": f"Scenario 1b - Static, matched budget ({matched_reward} points)",
+        "dynamic": "Scenario 2 - Dynamic (final)",
     }
 
     totals = {k: [total_selected(r) for r in runs] for k, runs in batches.items()}
@@ -74,21 +74,21 @@ def main():
     for k, runs in batches.items():
         groups[k], per_client[k] = group_participation(runs, roster)
 
-    base = mean(totals["standart"])
+    base = mean(totals["standard"])
     lines = [
-        "# Ödül Bütçesi Kontrolü — Dinamik Kazanç Kişiselleştirmeden mi, Büyük Ödülden mi?",
+        "# Reward Budget Control: Does the Dynamic Gain Come from Personalisation or from a Larger Reward?",
         "",
-        f"Aynı roster (`{args.roster}`), aynı seed'ler (101–110), 10 run × 100 round, Flower (Python) tarafı. "
-        f"Senaryo 1b'de statik ödül, dinamik senaryonun uygun client'lara ortalama teklifine (≈35,4 puan) eşitlendi.",
+        f"Same roster (`{args.roster}`), same seeds (101-110), 10 runs x 100 rounds, Flower (Python) side. "
+        f"In Scenario 1b the static reward is set equal to the dynamic scenario's mean offer to eligible clients (about 35.4 points).",
         "",
-        "## 1. Toplam Katılım",
+        "## 1. Total Participation",
         "",
-        "| Koşul | Run başı toplam seçim (ort ± std) | Standart'a oranı | Final accuracy (ort ± std) |",
+        "| Condition | Total selections per run (mean ± std) | Relative to standard | Final accuracy (mean ± std) |",
         "|---|---|---|---|",
     ]
     for k in batches:
         lines.append(
-            f"| {labels[k]} | {mean(totals[k]):.1f} ± {pstdev(totals[k]):.1f} | %{100 * mean(totals[k]) / base:.1f} | "
+            f"| {labels[k]} | {mean(totals[k]):.1f} ± {pstdev(totals[k]):.1f} | {100 * mean(totals[k]) / base:.1f}% | "
             f"{mean(accs[k]):.4f} ± {pstdev(accs[k]):.4f} |"
         )
     lines.append("")
@@ -96,13 +96,13 @@ def main():
     t_dm = stats.ttest_ind(totals["dynamic"], totals["static_matched"], equal_var=False)
     t_ms = stats.ttest_ind(totals["static_matched"], totals["static"], equal_var=False)
     lines += [
-        "Welch t-testi (toplam seçim):",
-        f"- Dinamik vs Statik-eşit-bütçe: fark = {mean(totals['dynamic']) - mean(totals['static_matched']):+.1f}, p = {t_dm.pvalue:.4f}",
-        f"- Statik-eşit-bütçe vs Statik-{static_reward}: fark = {mean(totals['static_matched']) - mean(totals['static']):+.1f}, p = {t_ms.pvalue:.4g}",
+        "Welch t-test (total selections):",
+        f"- Dynamic vs static-matched-budget: difference = {mean(totals['dynamic']) - mean(totals['static_matched']):+.1f}, p = {t_dm.pvalue:.4f}",
+        f"- Static-matched-budget vs static-{static_reward}: difference = {mean(totals['static_matched']) - mean(totals['static']):+.1f}, p = {t_ms.pvalue:.4g}",
         "",
-        "## 2. Bağlantı Grubuna Göre Katılım (client başı ortalama, /100 round)",
+        "## 2. Participation by Connectivity Group (mean per client, out of 100 rounds)",
         "",
-        "| Grup | Client'lar | " + " | ".join(labels[k] for k in batches) + " |",
+        "| Group | Clients | " + " | ".join(labels[k] for k in batches) + " |",
         "|---|---|" + "---|" * len(batches),
     ]
     order = ["weak", "medium", "strong"]
@@ -111,22 +111,22 @@ def main():
         lines.append(f"| {g} | {', '.join(map(str, ids))} | " + " | ".join(f"{groups[k][g]:.1f}" for k in batches) + " |")
     lines += [
         "",
-        f"## 3. Telafi Oranı (Statik-{static_reward}'in Standart'a göre kaybının ne kadarı geri kazanıldı)",
+        f"## 3. Recovery Rate (share of the static-{static_reward} loss relative to standard that is recovered)",
         "",
-        "`telafi = (koşul − statik) / (standart − statik)`",
+        "`recovery = (condition - static) / (standard - static)`",
         "",
-        "| Grup | Statik-eşit-bütçe | Dinamik |",
+        "| Group | Static, matched budget | Dynamic |",
         "|---|---|---|",
     ]
     for g in order:
-        loss = groups["standart"][g] - groups["static"][g]
+        loss = groups["standard"][g] - groups["static"][g]
         rec = lambda k: (groups[k][g] - groups["static"][g]) / loss * 100 if loss else float("nan")
-        lines.append(f"| {g} | %{rec('static_matched'):.1f} | %{rec('dynamic'):.1f} |")
+        lines.append(f"| {g} | {rec('static_matched'):.1f}% | {rec('dynamic'):.1f}% |")
     lines += [
         "",
-        "## 4. Katılım Eşitsizliği (client'lar arası)",
+        "## 4. Participation Inequality (across clients)",
         "",
-        "| Koşul | Gini | En az / en çok katılan (ort) |",
+        "| Condition | Gini | Least / most participating client (mean) |",
         "|---|---|---|",
     ]
     for k in batches:
@@ -134,7 +134,7 @@ def main():
         lines.append(f"| {labels[k]} | {gini(vals):.4f} | {min(vals):.1f} / {max(vals):.1f} |")
     lines += [
         "",
-        "## 5. Client Bazlı Katılım (ort /100 round)",
+        "## 5. Participation per Client (mean, out of 100 rounds)",
         "",
         "| Client | Connectivity | " + " | ".join(labels[k] for k in batches) + " |",
         "|---|---|" + "---|" * len(batches),

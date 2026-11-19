@@ -70,25 +70,25 @@ class FLSystem:
         self.server.last_model_accuracy = self.config.min_accuracy
         self.current_phase = FLPhase.Idle
         self.simulation_initialized = True
-        print("\n✓ Simülasyon hazır. run_one_phase() çağrısı yaparak başlayabilirsiniz.\n")
+        print("\nSimulation ready. Call run_one_phase() to start.\n")
 
     def get_server(self) -> Optional[Server]:
         return self.server
 
     def get_client_by_index(self, index: int) -> Optional[Client]:
         if self.server is None:
-            print("Server henüz initialize edilmemiş. Önce initialize_simulation() çağırın.")
+            print("Server is not initialised yet. Call initialize_simulation() first.")
             return None
 
         if index < 0 or index >= len(self.server.all_clients):
-            print(f"Geçersiz index: {index}. Toplam client sayısı: {len(self.server.all_clients)}")
+            print(f"Invalid index: {index}. Number of clients: {len(self.server.all_clients)}")
             return None
 
         return self.server.all_clients[index]
 
     def add_client(self, client: Client) -> None:
         if self.server is None:
-            print("Server henüz initialize edilmemiş. initialize_simulation çağrısından sonra add_client çağırın.")
+            print("Server is not initialised yet. Call add_client after initialize_simulation.")
             return
 
         if client is None:
@@ -96,21 +96,21 @@ class FLSystem:
             return
 
         self.server.add_clients([client])
-        print(f"✓ Client {client.client_id} sisteme eklendi.")
+        print(f"Client {client.client_id} sisteme eklendi.")
 
     def remove_client(self, index: int) -> None:
         if self.server is None:
-            print("Server henüz initialize edilmemiş.")
+            print("Server is not initialised yet.")
             return
 
         if index < 0 or index >= len(self.server.all_clients):
-            print(f"Geçersiz index: {index}. Toplam client sayısı: {len(self.server.all_clients)}")
+            print(f"Invalid index: {index}. Number of clients: {len(self.server.all_clients)}")
             return
 
         client_to_remove = self.server.all_clients[index]
         self.server.remove_clients([client_to_remove.client_id])
         self.server.all_clients.pop(index)
-        print(f"✓ Client {client_to_remove.client_id} (index {index}) silindi.")
+        print(f"Client {client_to_remove.client_id} (index {index}) silindi.")
 
     def get_client_count(self) -> int:
         if self.server is None:
@@ -124,8 +124,8 @@ class FLSystem:
 
     def run_one_phase(self) -> RoundPhaseReport:
         if not self.simulation_initialized or self.server is None:
-            print("Simülasyon henüz initialize edilmedi. Önce initialize_simulation() çağırın.")
-            return RoundPhaseReport(success=False, message="Simülasyon initialize edilmedi.")
+            print("Simulation is not initialised yet. Call initialize_simulation() first.")
+            return RoundPhaseReport(success=False, message="Simulation is not initialised.")
 
         start_time = perf_counter()
         report = RoundPhaseReport(current_phase=self.current_phase, round=self.server.round_number)
@@ -174,17 +174,17 @@ class FLSystem:
     def _execute_phase_idle(self, report: RoundPhaseReport) -> None:
         try:
             self.server.round_number += 1
-            print(f"\n{'─' * 90}")
+            print(f"\n{'-' * 90}")
             print(f"ROUND {self.server.round_number}")
-            print(f"{'─' * 90}")
+            print(f"{'-' * 90}")
             print(f"\nServer: {self.server.describe()}")
             print(f"Status: {self.server.get_active_clients_summary()}")
             self.current_phase = FLPhase.ClientSelection
             report.success = True
-            report.message = f"Round {self.server.round_number} hazırlandı. Client seçimi başlayacak."
+            report.message = f"Round {self.server.round_number} prepared. Client selection is next."
         except Exception as exc:
             report.success = False
-            report.message = f"Idle phase hatası: {exc}"
+            report.message = f"Idle phase error: {exc}"
 
     def _execute_phase_client_selection(self, report: RoundPhaseReport) -> None:
         try:
@@ -193,14 +193,14 @@ class FLSystem:
             report.success = True
             report.selected_count = len(self.server.selected_clients)
             report.selected_client_ids = [client.client_id for client in self.server.selected_clients]
-            report.message = f"{report.selected_count} client seçildi: {', '.join(map(str, report.selected_client_ids))}"
-            print(f"\n✓ Client Selection:")
-            print(f"  - Seçilen: {report.selected_count}")
+            report.message = f"{report.selected_count} clients selected: {', '.join(map(str, report.selected_client_ids))}"
+            print(f"\nClient Selection:")
+            print(f"  - Selected: {report.selected_count}")
             print(f"  - Client IDs: {', '.join(map(str, report.selected_client_ids))}")
             self.current_phase = FLPhase.LocalTraining
         except Exception as exc:
             report.success = False
-            report.message = f"Client seçimi hatası: {exc}"
+            report.message = f"Client selection error: {exc}"
 
     def _execute_phase_local_training(self, report: RoundPhaseReport) -> None:
         try:
@@ -230,14 +230,14 @@ class FLSystem:
             report.selected_count = len(self._current_round_client_updates)
             report.trained_count = len(self._current_round_client_updates)
             report.total_training_samples = sum(self._current_round_sample_counts)
-            report.message = f"{len(self._current_round_client_updates)} client training tamamladı. Toplam {report.total_training_samples} sample aggregasyona gidiyor."
-            print(f"\n✓ Local Training Tamamlandı:")
+            report.message = f"{len(self._current_round_client_updates)} clients finished training. {report.total_training_samples} samples go to aggregation."
+            print(f"\nLocal training finished:")
             print(f"  - Training yapan: {len(self._current_round_client_updates)}")
             print(f"  - Toplam samples: {report.total_training_samples}")
             self.current_phase = FLPhase.Aggregation
         except Exception as exc:
             report.success = False
-            report.message = f"Local training hatası: {exc}"
+            report.message = f"Local training error: {exc}"
 
     def _execute_phase_aggregation(self, report: RoundPhaseReport) -> None:
         try:
@@ -245,7 +245,7 @@ class FLSystem:
             if not self._current_round_client_updates:
                 self.current_phase = FLPhase.ModelEvaluation
                 report.success = True
-                report.message = "Aggregasyon için client update yok."
+                report.message = "No client updates to aggregate."
                 return
 
             aggregated = self.server.aggregate_weights(self._current_round_client_updates, self._current_round_sample_counts)
@@ -257,15 +257,15 @@ class FLSystem:
 
             report.success = True
             report.aggregated_samples = sum(self._current_round_sample_counts)
-            report.message = f"Weights aggregated. {len(self._current_round_client_updates)} client'ın {report.aggregated_samples} sample'ı server modelinde merge edildi."
+            report.message = f"Weights aggregated. {report.aggregated_samples} samples from {len(self._current_round_client_updates)} clients merged into the server model."
 
-            print(f"\n✓ Aggregation Tamamlandı:")
+            print(f"\nAggregation finished:")
             print(f"  - {len(self._current_round_client_updates)} client update merged")
             print(f"  - Sample weighted average: {report.aggregated_samples}")
             self.current_phase = FLPhase.ModelEvaluation
         except Exception as exc:
             report.success = False
-            report.message = f"Aggregation hatası: {exc}"
+            report.message = f"Aggregation error: {exc}"
 
     def _execute_phase_model_evaluation(self, report: RoundPhaseReport) -> None:
         try:
@@ -277,7 +277,7 @@ class FLSystem:
             self.current_phase = FLPhase.RoundComplete
         except Exception as exc:
             report.success = False
-            report.message = f"Model evaluation hatası: {exc}"
+            report.message = f"Model evaluation error: {exc}"
 
     def _execute_phase_round_complete(self, report: RoundPhaseReport) -> None:
         try:
@@ -309,9 +309,9 @@ class FLSystem:
             self.current_phase = FLPhase.Idle
 
             report.success = True
-            report.message = f"Round {self.server.round_number} tamamlandı. Sonraki round için hazır."
+            report.message = f"Round {self.server.round_number} complete. Ready for the next round."
 
-            print(f"\n✓ Round {self.server.round_number} Summary:")
+            print(f"\nRound {self.server.round_number} Summary:")
             print(f"  - Active clients: {len(self.server.active_clients)}")
             print(f"  - Selected: {len(self.server.selected_clients)}")
             print(f"  - Total samples: {round_info['total_samples']}")
@@ -327,7 +327,7 @@ class FLSystem:
                 )
         except Exception as exc:
             report.success = False
-            report.message = f"Round complete hatası: {exc}"
+            report.message = f"Round complete error: {exc}"
 
     def _calculate_weight_magnitude(self) -> float:
         if self.server is None or not self.server.model_weights:
@@ -373,7 +373,7 @@ class FLSystem:
 
         if not tested_clients:
             self.server.last_model_accuracy = max(self.config.min_accuracy, self.server.last_model_accuracy - 0.02)
-            print(f"  ⚠ No training this round. Accuracy penalty: {self.server.last_model_accuracy:.3f} ({self.server.last_model_accuracy * 100:.1f}%)")
+            print(f"  WARNING: No training this round. Accuracy penalty: {self.server.last_model_accuracy:.3f} ({self.server.last_model_accuracy * 100:.1f}%)")
             return
 
         weight_magnitude = self._calculate_weight_magnitude()
@@ -393,7 +393,7 @@ class FLSystem:
         self.server.last_model_accuracy = max(self.config.min_accuracy, min(self.server.last_model_accuracy, self.config.max_accuracy))
 
         print(
-            f"  ✓ Model Accuracy: {self.server.last_model_accuracy:.3f} ({self.server.last_model_accuracy * 100:.1f}%) "
+            f"  Model Accuracy: {self.server.last_model_accuracy:.3f} ({self.server.last_model_accuracy * 100:.1f}%) "
             f"[conv={convergence_bonus:.3f} + qual={quality_bonus:.3f} + round={round_bonus:.3f} + part={participation_bonus:.3f}]"
         )
 

@@ -1,129 +1,91 @@
-# Gamified Federated Learning Thesis Starter
+# Gamified Federated Learning Simulator
 
-This repository is a small thesis testbed for comparing a Flower/Python federated learning simulation with a Unity simulation.
+Code for my M.Sc. thesis at Ankara University (Computer Engineering, 2026):
+*Simulating Participant Behavior in Gamified Federated Learning Systems*
+(supervisor: Assoc. Prof. Dr. Bülent Tuğrul).
 
-The current workflow is:
+The simulator models a federated learning system in which clients decide in every round whether to take part, based on their battery, connectivity, engagement, fatigue and the reward offered by the server. It is used to compare three incentive settings:
 
-1. Generate a fresh random client roster in Python.
-2. Run 100 federated rounds in Python and export `flower_comparison_summary.json`.
-3. Copy the generated `initial_clients.json` into Unity and run the same scenario.
-4. Export `unity_comparison_summary.json` from Unity.
-5. Compare the two summaries with the reusable compare function or CLI script.
+| Mode | Scenario | Participation rule |
+|---|---|---|
+| `0` | Standard FL | no incentive, random participation among eligible clients |
+| `1` | Static incentive | every participant gets the same fixed reward |
+| `2` | Dynamic gamified incentive | the reward depends on the client's state and history (engagement, weak connectivity, previous participation), with a reward cap |
 
-## Project Files
+Training uses FedAvg with DP-FedAvg (update clipping and Gaussian noise). The same logic was also implemented in C# as a separate Unity simulation, and the results of both implementations were compared run by run.
 
-- `run.py`: runs the Flower/Python simulation and writes summary outputs.
-- `compare_summaries.py`: compares the Flower and Unity summaries and writes report files.
-- `src/fl_gamified/client.py`: client model and random client generation.
-- `src/fl_gamified/server.py`: federated round logic and Flower summary export.
-- `src/fl_gamified/system.py`: higher-level simulation orchestration.
-- `src/fl_gamified/reporting.py`: reusable summary comparison helper.
+## Results in short
 
-## Flower / Python Run
+All results below come from 10 runs of 100 rounds per scenario on the same fixed roster of 10 clients.
 
-### 1. Create the environment
+- A static reward **lowered** total participation by about 17% compared with no incentive, because the extra eligibility checks outweighed the small reward bonus.
+- After tuning, the dynamic scheme recovered participation to about 94% (Flower) and 96% (Unity) of the standard scenario.
+- Weakly connected clients recovered only about half of their lost participation, compared with almost all of it for well-connected clients.
+- The Python and Unity implementations agreed within about 1 to 2.5 percentage points of accuracy.
 
-Windows PowerShell:
+The full analysis is in the thesis.
 
-```powershell
+## Project structure
+
+```
+src/fl_gamified/
+  client.py        client model, random roster generation, participation decision
+  server.py        client selection, reward offer, FedAvg aggregation, summary export
+  privacy.py       DP-FedAvg (clipping, Gaussian noise, privacy accounting)
+  system.py        step-by-step simulation runner with detailed logs
+  config.py        all simulation parameters (SimulationConfig)
+  logger.py        JSONL event logger
+  reporting.py     comparison of a Flower summary with a Unity summary
+run.py                     single demo run (also generates a new client roster)
+run_batch.py               N repeated runs of one scenario on a fixed roster
+compare_batch.py           Flower vs Unity comparison over all runs of a scenario
+build_scenario_report.py   detailed per-scenario report
+compare_reward_budget.py   control experiment: static reward with the same total budget as dynamic
+compare_summaries.py       compare one Flower summary with one Unity summary
+outputs/
+  initial_clients.json     the fixed client roster used in the thesis
+  Flower/<scenario>/       per-run summaries from the Python simulation
+  Flower_static_matched35/ static scenario with the reward matched to the dynamic budget
+  Unity/<scenario>/        per-run summaries exported from the Unity simulation
+  summary_comparison_scenario_<scenario>_10runs.*   Flower vs Unity comparison tables
+```
+
+## Setup
+
+```bash
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 2. Run the simulation
+## Reproducing the experiments
 
-```powershell
-python run.py
+Run each scenario 10 times on the fixed roster (seeds 101 to 110):
+
+```bash
+python run_batch.py --mode 0 --runs 10
+python run_batch.py --mode 1 --runs 10
+python run_batch.py --mode 2 --runs 10
 ```
 
-What this produces:
+Results are written to `outputs/Flower/<standard|static|dynamic>/`.
 
-- `outputs/initial_clients.json`
-- `outputs/flower_comparison_summary.json`
-- `outputs/simulation_events.jsonl`
+Compare them with the Unity runs and build the reports:
 
-The initial client roster is randomized by default on every run. The current setup uses `build_random_clients(count=10)` without a fixed seed, so each run can produce a different client mix.
-
-### 3. What the Flower summary contains
-
-- `config`: the simulation configuration used for the run.
-- `rounds`: per-round selection, training, samples, and accuracy values.
-- `final_clients`: final client state snapshot.
-- `final_model_accuracy`: the final global accuracy.
-
-## Unity Run
-
-### 1. Move the Python client roster into Unity
-
-Take `outputs/initial_clients.json` from the Python run and place it where Unity can read it, then import it through the parser in the Unity project.
-
-The current Unity import flow is implemented in `FLSimulationManager` and `FLParser`.
-
-### 2. Run the Unity simulation
-
-Use the Unity UI to start the simulation and export the report. The report button writes the summary to:
-
-- `Outputs/unity_comparison_summary.json`
-
-Unity is currently configured for 100 rounds, matching the Python run.
-
-### 3. What the Unity summary contains
-
-The Unity summary matches the same top-level structure as the Flower summary:
-
-- `config`
-- `rounds`
-- `final_clients`
-- `final_model_accuracy`
-
-## Compare Flower and Unity
-
-### CLI usage
-
-After both summaries exist, generate the comparison reports with:
-
-```powershell
-python compare_summaries.py --flower outputs/flower_comparison_summary.json --unity outputs/unity_comparison_summary.json
+```bash
+python compare_batch.py --mode-tag dynamic
+python build_scenario_report.py --mode-tag dynamic
 ```
 
-This writes:
+Useful options of `run_batch.py`: `--rounds`, `--selection-rate`, `--seed-start`, `--no-dp`, `--dp-noise`, `--dp-clip`, `--static-reward`. All other parameters are in `src/fl_gamified/config.py`.
 
-- `outputs/summary_comparison.md`
-- `outputs/summary_comparison.csv`
+**Note:** `run.py` creates a new random client roster and overwrites `outputs/initial_clients.json`. To reproduce the thesis results, use `run_batch.py`, which always loads the existing roster.
 
-### Reusable function
+## Unity simulation
 
-If you want to use the comparison logic from another Python script, import:
-
-```python
-from src.fl_gamified.reporting import compare_comparison_summaries
-
-report = compare_comparison_summaries(
-    "outputs/flower_comparison_summary.json",
-    "outputs/unity_comparison_summary.json",
-    "outputs/summary_comparison.md",
-    "outputs/summary_comparison.csv",
-)
-```
-
-The function returns a dictionary with:
-
-- summary-level differences
-- round-level differences
-- client-level differences
-
-## Current Comparison Artifacts
-
-The latest generated comparison artifacts are:
-
-- `outputs/summary_comparison.md`
-- `outputs/summary_comparison.csv`
-
-Those files are meant to be regenerated every time you run a new Flower summary and a new Unity summary.
+The Unity project is not part of this repository. It reads `outputs/initial_clients.json`, runs the same three scenarios with a visual interface and exports `unity_comparison_summary_*.json` files with the same structure as the Python summaries. The exported files used in the thesis are in `outputs/Unity/`.
 
 ## Notes
 
-- Unity export naming is standardized to `unity_comparison_summary.json`.
-- The comparison script assumes both summaries share the same schema.
-- If you change the number of clients or the selection logic, regenerate both summaries before comparing.
+- The accuracy value is an analytical function of the aggregated weights, not a real classification accuracy. The thesis focuses on participation and incentive design rather than model accuracy.
+- `conceptual_framework_diagram.png` shows the overall design of the simulator.

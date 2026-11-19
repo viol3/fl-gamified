@@ -18,7 +18,7 @@ from src.fl_gamified.client import load_clients_from_json
 from src.fl_gamified.server import Server
 from src.fl_gamified.config import SimulationConfig
 
-MODE_TAGS = {0: "standart", 1: "static", 2: "dynamic"}
+MODE_TAGS = {0: "standard", 1: "static", 2: "dynamic"}
 
 
 def run_single(mode: int, seed: int, run_index: int, rounds: int, selection_rate: float, out_dir: str, roster_path: str, config_overrides: dict) -> dict:

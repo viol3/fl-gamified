@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Editor
+*.code-workspace
+.vscode/
+
+# Generated reports (re-create them with the scripts)
+outputs/*.md
+outputs/simulation_events.jsonl
+outputs/flower_comparison_summary.json
+outputs/summary_comparison.csv
+
+# Keep the Flower vs Unity comparison tables used in the thesis
+!outputs/summary_comparison_scenario_*_10runs.md

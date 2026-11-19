@@ -1,12 +1,12 @@
-# Scenario 2 — Dinamik Oyunlaştırılmış FL — Flower vs Unity (10 paired runs, fixed roster)
+# Scenario 2 - Dynamic Gamified FL - Flower vs Unity (10 paired runs, fixed roster)
 
-## 0. Client Roster Profili
+## 0. Client Roster Profile
 
-Sabit roster: 10 client, toplam 1042 sample (ort. 104.2/client).
+Fixed roster: 10 clients, 1042 samples in total (mean 104.2 per client).
 
-### Özellik Dağılımı
+### Attribute Distribution
 
-| Özellik | Min | Max | Ortalama | Std | Varyasyon Katsayısı (CV) |
+| Attribute | Min | Max | Mean | Std | Coefficient of Variation (CV) |
 |---|---|---|---|---|---|
 | Engagement | 0.59 | 0.78 | 0.657 | 0.050 | 0.076 |
 | Battery Level | 60 | 91 | 77.100 | 11.631 | 0.151 |
@@ -16,22 +16,22 @@ Sabit roster: 10 client, toplam 1042 sample (ort. 104.2/client).
 | Local Samples | 51 | 191 | 104.200 | 40.524 | 0.389 |
 | Local Epochs | 1 | 4 | 2.800 | 1.077 | 0.385 |
 
-**Ön plana çıkan özellik:** CV (std/mean) bazında en fazla farklılaşan özellik **Storage (GB)** (CV=0.470) — client'lar arasında en çok bu boyutta ayrışıyorlar. En homojen özellik ise **Engagement** (CV=0.076) — engagement değerleri client'lar arasında görece dar bir bantta (0.59-0.78) toplanmış, yani roster'da 'aşırı motivasyonsuz' ya da 'aşırı motivasyonlu' bir uç client yok.
+**Most varied attribute:** by CV (std/mean), clients differ most in **Storage (GB)** (CV=0.470). The most homogeneous attribute is **Engagement** (CV=0.076): engagement values lie in a fairly narrow band (0.59-0.78), so the roster has no extremely unmotivated or extremely motivated client.
 
-### Connectivity Dağılımı
+### Connectivity Distribution
 
-- strong: 3 client
-- medium: 4 client
-- weak: 3 client
+- strong: 3 clients
+- medium: 4 clients
+- weak: 3 clients
 
-### Veri (Digit) Kapsamı
+### Data (Digit) Coverage
 
-- Roster'ın kapsadığı rakamlar: [0, 1, 2, 3, 4, 6, 7]
-- **Hiç örneği olmayan rakamlar: [5, 8, 9]** — bu roster'da hiçbir client'ın local_samples'ında [5, 8, 9] rakamlarına ait tek bir örnek yok (Dirichlet/non-IID dağılımın rastgele bir sonucu). Bu, hangi senaryo çalışırsa çalışsın (0/1/2 fark etmez) global modelin bu rakamları hiç görmeden eğitileceği anlamına gelir — mevcut accuracy simülasyonu rakam-bazlı değil toplu bir formül kullandığı için sayısal sonucu etkilemiyor, ama gerçek bir sınıflandırma deneyinde bu ciddi bir kapsam boşluğu olarak raporlanmalı.
+- Digits covered by the roster: [0, 1, 2, 3, 4, 6, 7]
+- **Digits with no samples: [5, 8, 9]**. No client in this roster has a single sample of digits [5, 8, 9] in its local data (a random outcome of the Dirichlet/non-IID split). Whatever the scenario (0, 1 or 2), the global model is trained without ever seeing these digits. The current accuracy simulation uses an aggregate formula rather than per-digit accuracy, so the numbers are not affected, but in a real classification experiment this would be a serious coverage gap.
 
-### Senaryo 2 İçin Çıkarım
+### Implications for Scenario 2
 
-Senaryo 2'de `decide_participation()` çağrılır ve ödül artık round/bağlılık/bağlantı/geçmişe duyarlı biçimde kişiselleştirilir (bkz. `senaryo_modlari.md` Bölüm 5). Roster'daki özelliklerin katılım üzerindeki etkisi Senaryo 1'deki taban skor mekanizmasıyla aynıdır, ancak dezavantajlı client'lar (düşük engagement, zayıf bağlantı, önceki round'a katılmama) ek ödül bonusları alır — bu da Senaryo 1'e kıyasla dezavantajlı client'ların katılımını kısmen telafi etmesi beklenen bir mekanizmadır.
+In Scenario 2 `decide_participation()` is called and the reward is personalised by round, engagement, connectivity and history (see thesis, Section 3.8.4). The attributes affect participation through the same base score as in Scenario 1, but disadvantaged clients (low engagement, weak connectivity, no participation in the previous round) receive extra reward bonuses, which is expected to partly compensate for their lower participation in Scenario 1.
 
 ## Aggregate
 - Pairs compared: 10

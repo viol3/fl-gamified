@@ -33,7 +33,7 @@ class SimulationConfig:
     max_reward: int = 40
     reward_bonus_cap: float = 0.40
 
-    # Differential Privacy (DP-FedAvg: güncelleme kırpma + Gauss gürültüsü, bkz. privacy.py)
+    # Differential privacy (DP-FedAvg: update clipping + Gaussian noise, see privacy.py)
     dp_enabled: bool = True
     dp_clip_norm: float = 0.25
     dp_noise_multiplier: float = 1.0

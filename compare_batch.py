@@ -58,45 +58,43 @@ def roster_profile(roster: list[dict]) -> dict:
 
 
 SCENARIO_INFERENCE = {
-    "standart": (
-        "Senaryo 0'da `decide_participation()` hiç çağrılmadığı için (bkz. `senaryo_modlari.md` Bölüm 3), yukarıdaki "
-        "özelliklerden yalnızca **connectivity** ve **battery_level** katılım üzerinde gerçek bir etkiye sahip "
-        "(sunucu tarafı uygunluk filtresi üzerinden — weak connectivity ve düşük batarya elenme riskini artırır). "
-        "**Engagement, cpu_power, data_quality ve storage_capacity_gb bu senaryoda katılım kararını hiç etkilemiyor** "
-        "— roster'da bu özelliklerde büyük varyasyon (özellikle data_quality: 0.51-0.99 ve local_samples: 51-191) olsa "
-        "bile, kimin seçileceği bundan bağımsız, salt `selection_rate=0.6` olasılıklı bir örnekleme. Bu roster, "
-        "Senaryo 1/2 ile kıyaslandığında asıl farkı ortaya koyacak: aynı roster'da bu sefer engagement/data_quality'nin "
-        "katılımı gerçekten etkileyip etkilemediğini göreceğiz."
+    "standard": (
+        "In Scenario 0 `decide_participation()` is never called (see thesis, Section 3.8.2), so of the attributes above "
+        "only **connectivity** and **battery_level** have a real effect on participation, through the server-side "
+        "eligibility filter (weak connectivity and low battery raise the risk of being filtered out). "
+        "**Engagement, cpu_power, data_quality and storage_capacity_gb do not affect the participation decision in this scenario.** "
+        "Even though the roster varies widely in these attributes (for example data_quality: 0.51-0.99 and local_samples: 51-191), "
+        "who is selected is independent of them and follows a plain random draw with `selection_rate=0.6`. "
+        "Comparing this roster with Scenarios 1 and 2 shows whether engagement and data_quality start to affect participation."
     ),
     "static": (
-        "Senaryo 1'de `decide_participation()` çağrıldığı için (bkz. `senaryo_modlari.md` Bölüm 4), yukarıdaki "
-        "özelliklerin tamamı katılım skoruna doğrudan girer: `base_score = 0.45*engagement + 0.25*(battery/100) + "
-        "0.15*min(cpu_power/4,1) + 0.15*data_quality`. Ödül sabit olduğu için (`static_reward_points`) tüm client'lara "
-        "aynı `reward_bonus` eklenir — dolayısıyla client'lar arası katılım farkı artık **yalnızca roster'daki içsel "
-        "farklılıklardan** kaynaklanır. Buna ek olarak, hem sunucu tarafı uygunluk filtresi (Bölüm 2) hem de istemci içi "
-        "ikinci kademe kontrol (batarya<20, bağlantı kopma olasılığı: weak=0.35, medium=0.15, strong=0.05) weak/medium "
-        "connectivity client'ları yapısal olarak dezavantajlı kılar. Senaryo 0'ın aksine burada engagement ve data_quality "
-        "gibi özelliklerin katılım üzerinde ölçülebilir bir etkisi beklenir."
+        "In Scenario 1 `decide_participation()` is called (see thesis, Section 3.8.3), so all attributes above "
+        "enter the participation score directly: `base_score = 0.45*engagement + 0.25*(battery/100) + "
+        "0.15*min(cpu_power/4,1) + 0.15*data_quality`. Because the reward is fixed (`static_reward_points`), every client "
+        "gets the same `reward_bonus`, so differences in participation between clients come **only from the differences "
+        "within the roster**. In addition, both the server-side eligibility filter (thesis, Section 3.8.1) and the client-side "
+        "second check (battery<20, disconnection probability: weak=0.35, medium=0.15, strong=0.05) put clients with weak or medium "
+        "connectivity at a structural disadvantage. Unlike Scenario 0, attributes such as engagement and data_quality are "
+        "expected to have a measurable effect on participation."
     ),
     "dynamic": (
-        "Senaryo 2'de `decide_participation()` çağrılır ve ödül artık round/bağlılık/bağlantı/geçmişe duyarlı biçimde "
-        "kişiselleştirilir (bkz. `senaryo_modlari.md` Bölüm 5). Roster'daki özelliklerin katılım üzerindeki etkisi Senaryo "
-        "1'deki taban skor mekanizmasıyla aynıdır, ancak dezavantajlı client'lar (düşük engagement, zayıf bağlantı, önceki "
-        "round'a katılmama) ek ödül bonusları alır — bu da Senaryo 1'e kıyasla dezavantajlı client'ların katılımını kısmen "
-        "telafi etmesi beklenen bir mekanizmadır."
+        "In Scenario 2 `decide_participation()` is called and the reward is personalised by round, engagement, connectivity "
+        "and history (see thesis, Section 3.8.4). The attributes affect participation through the same base score as in "
+        "Scenario 1, but disadvantaged clients (low engagement, weak connectivity, no participation in the previous round) "
+        "receive extra reward bonuses, which is expected to partly compensate for their lower participation in Scenario 1."
     ),
 }
 
 
-def render_roster_section(roster: list[dict], profile: dict, mode_tag: str = "standart") -> list[str]:
+def render_roster_section(roster: list[dict], profile: dict, mode_tag: str = "standard") -> list[str]:
     lines = []
-    lines.append("## 0. Client Roster Profili")
+    lines.append("## 0. Client Roster Profile")
     lines.append("")
-    lines.append(f"Sabit roster: {profile['n_clients']} client, toplam {profile['total_samples']} sample (ort. {profile['total_samples'] / profile['n_clients']:.1f}/client).")
+    lines.append(f"Fixed roster: {profile['n_clients']} clients, {profile['total_samples']} samples in total (mean {profile['total_samples'] / profile['n_clients']:.1f} per client).")
     lines.append("")
-    lines.append("### Özellik Dağılımı")
+    lines.append("### Attribute Distribution")
     lines.append("")
-    lines.append("| Özellik | Min | Max | Ortalama | Std | Varyasyon Katsayısı (CV) |")
+    lines.append("| Attribute | Min | Max | Mean | Std | Coefficient of Variation (CV) |")
     lines.append("|---|---|---|---|---|---|")
     for attr, label in ROSTER_ATTRS:
         s = profile["stats"][attr]
@@ -106,35 +104,34 @@ def render_roster_section(roster: list[dict], profile: dict, mode_tag: str = "st
     most_varied = ranked_cv[0][1]
     least_varied = ranked_cv[-1][1]
     lines.append(
-        f"**Ön plana çıkan özellik:** CV (std/mean) bazında en fazla farklılaşan özellik **{most_varied}** "
-        f"(CV={profile['stats'][ranked_cv[0][0]]['cv']:.3f}) — client'lar arasında en çok bu boyutta ayrışıyorlar. "
-        f"En homojen özellik ise **{least_varied}** (CV={profile['stats'][ranked_cv[-1][0]]['cv']:.3f}) — "
-        "engagement değerleri client'lar arasında görece dar bir bantta (0.59-0.78) toplanmış, yani roster'da "
-        "'aşırı motivasyonsuz' ya da 'aşırı motivasyonlu' bir uç client yok."
+        f"**Most varied attribute:** by CV (std/mean), clients differ most in **{most_varied}** "
+        f"(CV={profile['stats'][ranked_cv[0][0]]['cv']:.3f}). "
+        f"The most homogeneous attribute is **{least_varied}** (CV={profile['stats'][ranked_cv[-1][0]]['cv']:.3f}): "
+        "engagement values lie in a fairly narrow band (0.59-0.78), so the roster has no extremely unmotivated "
+        "or extremely motivated client."
     )
     lines.append("")
-    lines.append("### Connectivity Dağılımı")
+    lines.append("### Connectivity Distribution")
     lines.append("")
     for level in ["strong", "medium", "weak"]:
         count = profile["connectivity_counts"].get(level, 0)
-        lines.append(f"- {level}: {count} client")
+        lines.append(f"- {level}: {count} clients")
     lines.append("")
-    lines.append("### Veri (Digit) Kapsamı")
+    lines.append("### Data (Digit) Coverage")
     lines.append("")
-    lines.append(f"- Roster'ın kapsadığı rakamlar: {profile['digits_covered']}")
+    lines.append(f"- Digits covered by the roster: {profile['digits_covered']}")
     if profile["digits_missing"]:
         lines.append(
-            f"- **Hiç örneği olmayan rakamlar: {profile['digits_missing']}** — bu roster'da hiçbir client'ın "
-            f"local_samples'ında {profile['digits_missing']} rakamlarına ait tek bir örnek yok (Dirichlet/non-IID dağılımın "
-            "rastgele bir sonucu). Bu, hangi senaryo çalışırsa çalışsın (0/1/2 fark etmez) global modelin bu rakamları "
-            "hiç görmeden eğitileceği anlamına gelir — mevcut accuracy simülasyonu rakam-bazlı değil toplu bir formül "
-            "kullandığı için sayısal sonucu etkilemiyor, ama gerçek bir sınıflandırma deneyinde bu ciddi bir kapsam "
-            "boşluğu olarak raporlanmalı."
+            f"- **Digits with no samples: {profile['digits_missing']}**. No client in this roster has a single sample of "
+            f"digits {profile['digits_missing']} in its local data (a random outcome of the Dirichlet/non-IID split). "
+            "Whatever the scenario (0, 1 or 2), the global model is trained without ever seeing these digits. "
+            "The current accuracy simulation uses an aggregate formula rather than per-digit accuracy, so the numbers are "
+            "not affected, but in a real classification experiment this would be a serious coverage gap."
         )
     else:
-        lines.append("- Roster tüm rakamları (0-9) kapsıyor.")
+        lines.append("- The roster covers all digits (0-9).")
     lines.append("")
-    lines.append(f"### Senaryo {'0' if mode_tag == 'standart' else '1' if mode_tag == 'static' else '2'} İçin Çıkarım")
+    lines.append(f"### Implications for Scenario {'0' if mode_tag == 'standard' else '1' if mode_tag == 'static' else '2'}")
     lines.append("")
     lines.append(SCENARIO_INFERENCE[mode_tag])
     lines.append("")
@@ -143,7 +140,7 @@ def render_roster_section(roster: list[dict], profile: dict, mode_tag: str = "st
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Compare paired Flower/Unity batch runs and write an aggregate report.")
-    parser.add_argument("--mode-tag", default="standart", choices=["standart", "static", "dynamic"], help="Scenario subfolder to compare (matches outputs/Flower/<tag> and outputs/Unity/<tag>)")
+    parser.add_argument("--mode-tag", default="standard", choices=["standard", "static", "dynamic"], help="Scenario subfolder to compare (matches outputs/Flower/<tag> and outputs/Unity/<tag>)")
     parser.add_argument("--flower-dir", default=None, help="Directory containing flower_comparison_summary_*.json files (default: outputs/Flower/<mode-tag>)")
     parser.add_argument("--unity-dir", default=None, help="Directory containing unity_comparison_summary_*.json files (default: outputs/Unity/<mode-tag>)")
     parser.add_argument("--roster", default="outputs/initial_clients.json", help="Fixed client roster JSON used by both platforms")
@@ -162,7 +159,7 @@ def main() -> None:
     unity_files = sorted(glob.glob(os.path.join(unity_dir, "unity_comparison_summary_*.json")))
 
     if len(flower_files) != len(unity_files):
-        print(f"WARNING: {len(flower_files)} Flower files vs {len(unity_files)} Unity files — pairing only the first {min(len(flower_files), len(unity_files))}.")
+        print(f"WARNING: {len(flower_files)} Flower files vs {len(unity_files)} Unity files - pairing only the first {min(len(flower_files), len(unity_files))}.")
 
     pairs = list(zip(flower_files, unity_files))
     rows = []
@@ -205,10 +202,10 @@ def main() -> None:
     roster = json.load(open(args.roster, encoding="utf-8"))
     profile = roster_profile(roster)
 
-    scenario_titles = {"standart": "Scenario 0 — Baz FL", "static": "Scenario 1 — Statik Teşvik", "dynamic": "Scenario 2 — Dinamik Oyunlaştırılmış FL"}
+    scenario_titles = {"standard": "Scenario 0 - Baseline FL", "static": "Scenario 1 - Static Incentive", "dynamic": "Scenario 2 - Dynamic Gamified FL"}
     # Markdown report
     lines = []
-    lines.append(f"# {scenario_titles[args.mode_tag]} — Flower vs Unity (10 paired runs, fixed roster)")
+    lines.append(f"# {scenario_titles[args.mode_tag]} - Flower vs Unity (10 paired runs, fixed roster)")
     lines.append("")
     lines.extend(render_roster_section(roster, profile, args.mode_tag))
     lines.append("## Aggregate")
